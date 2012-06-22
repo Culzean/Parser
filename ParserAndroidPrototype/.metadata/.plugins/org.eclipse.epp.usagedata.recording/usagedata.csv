@@ -1,0 +1,60 @@
+what,kind,bundleId,bundleVersion,description,time
+java.specification.version,sysinfo,,,"1.7",1337073314681
+java.vendor,sysinfo,,,"Oracle Corporation",1337073314681
+java.version,sysinfo,,,"1.7.0_02",1337073314681
+java.vm.info,sysinfo,,,"mixed mode",1337073314681
+java.vm.name,sysinfo,,,"Java HotSpot(TM) 64-Bit Server VM",1337073314681
+java.vm.specification.name,sysinfo,,,"Java Virtual Machine Specification",1337073314681
+java.vm.specification.vendor,sysinfo,,,"Oracle Corporation",1337073314681
+java.vm.specification.version,sysinfo,,,"1.7",1337073314681
+java.vm.vendor,sysinfo,,,"Oracle Corporation",1337073314681
+java.vm.version,sysinfo,,,"22.0-b10",1337073314681
+started,bundle,org.eclipse.m2e.usagedata,1.0.100.20110804-1717,"org.eclipse.m2e.usagedata",1337073314805
+started,bundle,org.eclipse.wb.discovery.ui,1.1.0.r37x201109091028,"org.eclipse.wb.discovery.ui",1337073316489
+started,bundle,com.android.ide.eclipse.adt,17.0.0.v201203161636-291853,"com.android.ide.eclipse.adt",1337073316577
+started,bundle,org.eclipse.ltk.core.refactoring,3.5.201.r371_v20110824-0800,"org.eclipse.ltk.core.refactoring",1337073316606
+started,bundle,org.eclipse.ltk.ui.refactoring,3.6.0.v20110505-0800,"org.eclipse.ltk.ui.refactoring",1337073316609
+deactivated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073744549
+activated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073750947
+deactivated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073753971
+activated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073785935
+executed,command,org.eclipse.ui,3.7.0.I20110602-0100,"org.eclipse.ui.file.import",1337073785948
+deactivated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073793727
+activated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073813805
+executed,command,org.eclipse.ui,3.7.0.I20110602-0100,"org.eclipse.ui.file.import",1337073813819
+deactivated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073840050
+started,bundle,org.eclipse.jst.j2ee.navigator.ui,1.1.501.v201107261503,"org.eclipse.jst.j2ee.navigator.ui",1337073844868
+activated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073845280
+deactivated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073845396
+activated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073848767
+deactivated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073848858
+activated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073849666
+deactivated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073850437
+activated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073859376
+deactivated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073862614
+activated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073873068
+closed,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1337073873280
+started,bundle,org.eclipse.compare.core,3.5.200.I20110208-0800,"org.eclipse.compare.core",1337073873544
+started,bundle,org.eclipse.compare,3.5.201.R37x_v20110817-0800,"org.eclipse.compare",1337073873553
+stopped,bundle,org.eclipse.jst.ws.axis.creation.ui,1.0.700.v201104070312,"org.eclipse.jst.ws.axis.creation.ui",1337073873963
+stopped,bundle,org.eclipse.jst.ws.axis.consumption.ui,1.0.505.v201004211805,"org.eclipse.jst.ws.axis.consumption.ui",1337073873964
+stopped,bundle,org.eclipse.jst.ws.axis.consumption.core,1.0.407.v201104071820,"org.eclipse.jst.ws.axis.consumption.core",1337073873965
+stopped,bundle,org.eclipse.jst.ws.axis2.creation.ui,1.0.104.v201004211805,"org.eclipse.jst.ws.axis2.creation.ui",1337073873967
+stopped,bundle,org.eclipse.jst.ws.axis2.consumption.ui,1.0.103.v201004211805,"org.eclipse.jst.ws.axis2.consumption.ui",1337073873968
+stopped,bundle,org.eclipse.jst.ws.axis2.creation.core,1.0.106.v201004211805,"org.eclipse.jst.ws.axis2.creation.core",1337073873970
+stopped,bundle,org.eclipse.jst.ws.axis2.consumption.core,1.0.105.v201004211805,"org.eclipse.jst.ws.axis2.consumption.core",1337073873971
+stopped,bundle,org.eclipse.jst.ws.axis2.ui,1.0.303.v201003110431,"org.eclipse.jst.ws.axis2.ui",1337073873972
+stopped,bundle,org.eclipse.jst.ws.axis2.core,1.0.204.v201004211805,"org.eclipse.jst.ws.axis2.core",1337073873973
+stopped,bundle,org.eclipse.jst.ws.cxf.creation.ui,1.0.100.v201104022153,"org.eclipse.jst.ws.cxf.creation.ui",1337073873974
+stopped,bundle,org.eclipse.jst.ws.creation.ui,1.0.609.v201103082016,"org.eclipse.jst.ws.creation.ui",1337073873976
+stopped,bundle,org.eclipse.jst.ws.cxf.consumption.ui,1.0.0.v201003222311,"org.eclipse.jst.ws.cxf.consumption.ui",1337073873977
+stopped,bundle,org.eclipse.jst.ws.consumption.ui,1.1.401.v201108240414,"org.eclipse.jst.ws.consumption.ui",1337073873979
+stopped,bundle,org.eclipse.jst.ws.consumption,1.0.601.v201108230319,"org.eclipse.jst.ws.consumption",1337073873980
+stopped,bundle,org.eclipse.jst.ws.cxf.consumption.core,1.0.0.v201003222311,"org.eclipse.jst.ws.cxf.consumption.core",1337073873981
+stopped,bundle,org.eclipse.jst.ws.cxf.creation.core,1.0.100.v201104022153,"org.eclipse.jst.ws.cxf.creation.core",1337073873983
+stopped,bundle,org.eclipse.jst.ws.cxf.ui,1.0.0.v201004171919,"org.eclipse.jst.ws.cxf.ui",1337073873984
+stopped,bundle,org.eclipse.jst.ws.cxf.core,1.0.100.v201104022153,"org.eclipse.jst.ws.cxf.core",1337073873986
+stopped,bundle,org.eclipse.jst.ws.uddiregistry,1.0.500.v201004211805,"org.eclipse.jst.ws.uddiregistry",1337073873987
+stopped,bundle,org.eclipse.jst.ws.ui,1.0.403.v201004211805,"org.eclipse.jst.ws.ui",1337073873989
+stopped,bundle,org.eclipse.jst.ws,1.0.509.v201108250610,"org.eclipse.jst.ws",1337073873990
+stopped,bundle,org.eclipse.wst.ws.explorer,1.0.607.v201103082002,"org.eclipse.wst.ws.explorer",1337073873995
