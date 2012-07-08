@@ -3,6 +3,8 @@ package game;
 import events.Vector2D;
 import gameEngine.ParserView;
 import hud.CalibCircle;
+import hud.HUD;
+import hud.MenuHUD;
 import android.graphics.Canvas;
 import android.hardware.SensorEvent;
 import android.view.MotionEvent;
@@ -20,39 +22,46 @@ public class MenuState extends State
 	private int averageY[] = new int[TAKE_AV];
 	private int averageZ[] = new int[TAKE_AV];
 	private int i = 0;
-	private boolean ready = false;
+	private MenuHUD hud = null;
+	private int startCellType;
 	
 	public MenuState(int width, int height, ParserView viewRef, GameModel model) 
 	{
 		super(width, height, viewRef, model);
-		calib1 = new CalibCircle( (int)(this.getWindowWidth() * 0.5), (int) (this.getWindowHeight() * 0.5), (int) (this.getWindowWidth() * 0.1) );
-		calib2 = new CalibCircle( (int)(this.getWindowWidth() * 0.5), (int) (this.getWindowHeight() * 0.5), (int) (this.getWindowWidth() * 0.04) );
+		calib1 = new CalibCircle( (int)(this.getWindowWidth() * 0.5), (int) (this.getWindowHeight() * 0.54), (int) (this.getWindowWidth() * 0.1) );
+		calib2 = new CalibCircle( (int)(this.getWindowWidth() * 0.5), (int) (this.getWindowHeight() * 0.54), (int) (this.getWindowWidth() * 0.04) );
 		calbOffset = new Vector2D((int)(this.getWindowWidth() * 0.5),0);
+		hud = new MenuHUD(this);
+		startCellType = -1;
 	}
 
 	@Override
 	public void gameRender(long elapsed, Canvas dbImage) 
 	{
-		dbImage.drawText("Instructions: ", 20, 20, ParserView.textColor);
-		dbImage.drawText(" - Once in the game, press one of the button to change the type of cell.", 20, 40, ParserView.textColor);
-		dbImage.drawText(" - Use the accelerometer to aim the organs(blue circle) and increase your score", 20, 60, ParserView.textColor);
-		dbImage.drawText(" - Switch to white cells in case of virus infection (green cells)", 20, 80, ParserView.textColor);
-		dbImage.drawText(" - Take care, the more virus you've on the screen, the more it'll be hard to get rid of them", 20, 100, ParserView.textColor);
-		dbImage.drawText("   and your score will decrease", 20, 120, ParserView.textColor);
-		dbImage.drawText("Touch the screen to start playing", 20, 200, ParserView.textColor);
-		
+		dbImage.drawText("Instructions: ", 20, 60, ParserView.textColor);
+		dbImage.drawText(" - The heart is a vital organ. And it's your job to keep this heart ticking over.", 20, 80, ParserView.textColor);
+		dbImage.drawText(" - Use touch and drag controls to tell the heart where to send blood cells", 20, 100, ParserView.textColor);
+		dbImage.drawText(" - Each blood cell has a different role", 20, 120, ParserView.textColor);
+		dbImage.drawText(" - Watch out for viruses getting in your way and fat beginning to accumulate.", 20, 140, ParserView.textColor);
+		dbImage.drawText("   Too much fat about and you'll suffer a heart attack!", 20, 160, ParserView.textColor);
+		if(startCellType == -1)
+			dbImage.drawText("Select starting blood cell type", 280, 380, ParserView.textColor);
+		else
+			dbImage.drawText("Touch screen to begin game!", 280, 300, ParserView.textColor);
 		calib1.draw(dbImage);
 		calib2.draw(dbImage);
+		hud.draw(dbImage);
 	}
 
 	@Override
 	public void init(){}
 	@Override
-	public void update(long elapsed){
+	public boolean update(long elapsed){
 		if(Math.abs(calbOffset.y) < 0.05 )
 			calib2.changePaint();
 		calib2.update( (int)(calbOffset.x * 20 + (this.getWindowWidth() * 0.5)),
 				(int)(calbOffset.y * 20 + (this.getWindowHeight() * 0.5)) );
+		return true;
 	}
 	
 	public int calibrateX()
@@ -88,7 +97,13 @@ public class MenuState extends State
 	@Override
 	public boolean onTouch(MotionEvent event) {
 		if(event.getAction() == MotionEvent.ACTION_UP)
-			gameView.startGame(gameView);
+			{
+			if(!hud.interact((int)event.getX(), (int)event.getY()) )
+				{	
+				if(startCellType != -1)
+					gameView.startGame(gameView, startCellType);
+				}
+			}
 		return false;
 	}
 
@@ -102,7 +117,6 @@ public class MenuState extends State
 		if(++i >= TAKE_AV)
 		{
 			i =0;
-			ready = true;
 			//don't start the game till we know how you'll be holding this accele
 		}
 		
@@ -112,8 +126,13 @@ public class MenuState extends State
 	}
 
 	@Override
-	public void slowUpdate(long dt) {
+	public void slowUpdate(long dt, int frCount) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void switchCellType(int newCellType) {
+		startCellType = newCellType;
 	}
 }

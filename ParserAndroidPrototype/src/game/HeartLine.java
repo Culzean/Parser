@@ -24,6 +24,7 @@ public class HeartLine {
 
 	private int width, height, noLine;
 	private int drawY;
+	private float velY;
 	static Paint lineColor = new Paint();
 	
 	private int virusAlance = 3;
@@ -40,15 +41,17 @@ public class HeartLine {
 		model = _model;
 		setRatio(iratio);
 		noLine = (int) (height * 0.2);
+		velY = (float) ( (height / 1.4) * 0.001);
 		drawY = 0;
 		lineColor.setColor(Color.GRAY);
 		r = new RandomNumGen();
 		r.Randomize();
 	}
 	
-	public void update()
+	public void update(long dt)
 	{
-		drawY += (height / noLine);
+		//drawY += (height / noLine);
+		drawY += (velY * dt);
 		
 		if(drawY >= height)
 			drawY = 0 + 1;
@@ -94,26 +97,27 @@ public class HeartLine {
 		//create a virus. Might need to decide what type
 		//find where to add the virus. set virus startx and y.
 		//find directions of travel
-		int totalSides = ParserView.windowWidth * 4; //This is a square based game
-		
-		int randNum = r.Random(totalSides);
+		int randNum = r.Random(ParserView.windowWidth * 4);
 		
 		int side = (randNum / ParserView.windowWidth );  //0,1,2,3
-		int sideValue = randNum % ParserView.windowWidth;
-		
+		float dx = r.Random(2000) - 1000;
+		dx /= 1000;
+		float dy = r.Random(2000) - 1000;
+		dy /= 1000;
 		switch(side)
 		{
 			case 0:
-				model.addCell(sideValue, 0, new Vector2D(0,1), Entity.VIRUS);
+				//
+				model.addCell(r.Random( ParserView.windowWidth ), 0, new Vector2D(dx,dy), Entity.VIRUS);
 				break;
 			case 1:
-				model.addCell(ParserView.windowWidth, sideValue, new Vector2D(-1,0), Entity.VIRUS);
+				model.addCell(ParserView.windowWidth, r.Random( ParserView.windowHeight ), new Vector2D(dx,dy), Entity.VIRUS);
 				break;
 			case 2:
-				model.addCell(ParserView.windowWidth - sideValue, ParserView.windowWidth, new Vector2D(0,-1), Entity.VIRUS);
+				model.addCell(r.Random( ParserView.windowWidth ), ParserView.windowHeight, new Vector2D(dx,dy), Entity.VIRUS);
 				break;
 			case 3:
-				model.addCell(0, ParserView.windowWidth - sideValue, new Vector2D(1,0), Entity.VIRUS);
+				model.addCell(0, r.Random( ParserView.windowHeight ), new Vector2D(dx,dy), Entity.VIRUS);
 				break;
 			default:
 			//System.out.println("Did not add virus! initialization information corrupt! " + side);

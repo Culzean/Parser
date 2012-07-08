@@ -12,9 +12,12 @@ import android.graphics.Paint;
 
 public class ScoreBoard extends DisplayObject implements ScoreObserver{
 	
-	GameScore observable;
-	float score;
-	float scoreVel;
+	private GameScore observable;
+	private float score;
+	private float scoreVel;
+	private float prevVel;
+	private float scoreGrad;
+	private String scorePrint;
 	private Paint texCol;
 	private float SCORE_INDENT;
 	
@@ -44,6 +47,8 @@ public class ScoreBoard extends DisplayObject implements ScoreObserver{
 		dbimage.drawRect(posX, posY, posX+getWidth(), posY+getHeight(), color);
 		dbimage.drawText("Score: ", posX+SCORE_INDENT, posY+SCORE_INDENT * 2, texCol);
 		dbimage.drawText(""+(int)score, posX+SCORE_INDENT, posY+SCORE_INDENT * 5, texCol);
+		dbimage.drawText(""+scoreVel, posX+SCORE_INDENT, posY+SCORE_INDENT * 10, texCol);
+		dbimage.drawText(""+scorePrint, posX+SCORE_INDENT, posY+SCORE_INDENT * 8, texCol);
 	}
 	
 
@@ -52,10 +57,22 @@ public class ScoreBoard extends DisplayObject implements ScoreObserver{
 		// TODO Auto-generated method stub
 		this.score = newScore;
 		this.scoreVel = newVel;
-		if(scoreVel > 1.1)
+		if(scoreVel > 0.8)
 			texCol.setColor(Color.WHITE);
+		else if(scoreVel < 0.6)
+			texCol.setColor(Color.MAGENTA);
 		else
 			texCol.setColor(Color.BLACK);
+		
+		scoreGrad = (float) ((scoreGrad + (scoreVel - prevVel) ) * 0.5);
+		if(scoreGrad > 0)
+			scorePrint = "+";
+		else if(scoreGrad < 0)
+			scorePrint = "-";
+		else
+			scorePrint = ":S";
+		
+		prevVel = scoreVel;
 	}
 
 	@Override

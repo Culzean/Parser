@@ -29,17 +29,18 @@ public class ParserThread extends Thread
     {
         Canvas canvas = null;
         //Starting time
-        startingTime = System.currentTimeMillis();
-        secondCounter = System.currentTimeMillis();
+        startingTime = System.nanoTime();
+        secondCounter = System.nanoTime();
         while (mRun) 
         {
+        	startingTime = System.nanoTime();
 	        canvas = surfaceHolder.lockCanvas();
 	        if (canvas != null) 
 	        {
-	        	currentTime = System.currentTimeMillis();
+	        	currentTime = System.nanoTime();
 	        	parserView.doDraw(timeElapsed, canvas);
 	            ++frCount;
-	            if( (currentTime - secondCounter) > 1000 )
+	            if( (currentTime - secondCounter) > 1000000000 )
 	            	{
 	            		parserView.slowUpdate( ( currentTime - secondCounter ) ,frCount );
 	            		frCount = 0;
@@ -48,7 +49,7 @@ public class ParserThread extends Thread
 	            timeElapsed = currentTime - startingTime;
 	            surfaceHolder.unlockCanvasAndPost(canvas);
 	        }
-	        startingTime = System.currentTimeMillis();
+	        
         }
     }
 }

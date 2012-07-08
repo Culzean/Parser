@@ -2,6 +2,7 @@ package gameEngine;
 
 import game.GameModel;
 import game.GameState;
+import game.HeartAttack;
 import game.MenuState;
 import game.State;
 import android.R;
@@ -75,21 +76,39 @@ public class ParserView extends SurfaceView implements SurfaceHolder.Callback, S
         
         //Color
         textColor.setColor(Color.WHITE);
+        textColor.setTextSize(18);
         
         setLongClickable(true);
     }
     
-    public void startGame(ParserView viewRef)
+    public void startGame(ParserView viewRef, int startCell)
     {
     	gameModel = new GameModel(getResources(), assetManager);
     	gameModel.calibrateX(((MenuState) gameState).calibrateX());
     	gameModel.calibrateY(((MenuState) gameState).calibrateY());
     	gameModel.calibrateZ(((MenuState) gameState).calibrateZ());
     	State newState = new GameState(windowWidth, windowHeight, viewRef, gameModel);
+    	newState.switchCellType(startCell);
+    	newState.init();
     	changeState(newState);
     }
     
-	public void changeState(State newState)
+    public void gameOver()
+    {
+    	//swap state for game over
+    	//record score?
+    	//wait for call to return to menu
+    	changeState( new HeartAttack(this.getWidth(), this.getHeight(), this, gameModel) );
+    }
+    
+    public void endGame( int wWidth, int wHeight )
+    {
+    	//clear all game assest and return to menu
+    	gameModel.gameOver();
+    	changeState( new MenuState(wWidth, wHeight, this, gameModel ) );
+    }
+    
+	private void changeState(State newState)
 	{
 		gameState = newState;
 	}
@@ -103,14 +122,14 @@ public class ParserView extends SurfaceView implements SurfaceHolder.Callback, S
     	gameState.gameRender(elapsed, canvas);
     	
     	//Draw the fps
-    	canvas.drawText("FPS: " + fps, 10, 10, textColor);
-    	canvas.drawText("Event: " + eventTime, 10, 40, textColor);
+    	canvas.drawText("FPS: " + fps, 10, 20, textColor);
+    	canvas.drawText("DeltaTime: " + elapsed, 10, 40, textColor);
     }
     
     public void slowUpdate( long secondDelta ,int frCount )
     {
-    	fps = Math.round( ((frCount * 1000f) / secondDelta) );
-    	gameState.slowUpdate( secondDelta );
+    	fps = Math.round( ((frCount * 1000000000f) / secondDelta) );
+    	gameState.slowUpdate( secondDelta, frCount );
     }
 
 	@Override

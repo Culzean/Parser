@@ -4,6 +4,7 @@ import game.CellType.Cell;
 import game.CellType.FatCell;
 import game.test.R;
 import gameEngine.CollisionControl;
+import gameEngine.GameObject;
 import gameEngine.ParserView;
 import gameEngine.Sprite;
 import hud.HUD;
@@ -18,6 +19,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.hardware.SensorEvent;
 import android.view.MotionEvent;
+import events.CreateCell;
 import events.RandomNumGen;
 import events.Vector2D;
 
@@ -28,6 +30,7 @@ public class GameState extends State
 	private PlayerUI input;
 	private Vector2D cellVector; // to set the direction of the cells
 	private GameScore scoreCal;
+	private long avTime; //average time per frame in ms
 	
 	//Random number generator
 	private RandomNumGen rNum;
@@ -61,39 +64,48 @@ public class GameState extends State
 		virusChecker = new Timer();
 		virusChecker.scheduleAtFixedRate(virusCheckerTask, new Date(), 2000);
 		
+		gameModel.InitGame();
+		
 		heart = new Heart(gameModel, windowWidth * 0.5, windowHeight * 0.5, windowHeight * 0.18);
+		gameModel.setHeartRef(heart);
 		line = new HeartLine(windowWidth, windowHeight, gameModel, 2);
 		input = new PlayerUI(gameModel, heart);
-		scoreCal = new GameScore(gameModel);
+		scoreCal = gameModel.scoreCal;
 		
 		rNum = new RandomNumGen(); //initilize RNG
 		rNum.Randomize();
 		
 		hud = new HUD(this, scoreCal);
 		
+		gameModel.setGameHeight(getWindowHeight());
+		gameModel.setGameWidth(getWindowWidth());
+		
 		gameModel.addOrgan(rNum.Random((int)ParserView.windowWidth), rNum.Random((int)ParserView.windowHeight), 15, 500);
 		Bitmap backgroundSprite = BitmapFactory.decodeResource(gameView.getResources(), R.drawable.bg);
 		background = new Sprite(backgroundSprite, 1, 1, 1, 1);
 		background.resize(windowWidth, windowHeight);
 		
-		//By default use red cells
-		currentCellType = Entity.REDCELL;
-		
+		int randStartFat = (rNum.Random(22) + 6);
+		for(int i = 0; i< randStartFat; ++i)
+			this.addFat();
 		//Play the heartbeat sound
-		gameModel.PlayHeartBeat();
+		gameModel.PlayHeartBeat( heart.getVol() );//mono?
 	}
 	
-	public void update(long elapsed)
+	public boolean update(long dt)
 	{
-		line.update();
-		if(input.update(elapsed) != null)
-			cellVector = input.update(elapsed).colVector();
+		//convert dt to ms, use avergae over one sec to stablise value
+		dt *= 0.000001;
+		dt = (long) ( (dt + avTime) * 0.5 );
+		line.update(dt);
+		if(input.update(dt) != null)
+			cellVector = input.update(dt).colVector();
 		
 		if(cellVector == null)
 		{ cellVector = new Vector2D(3,7);	}
 			
 		//main update function
-		if(heart.update())
+		if(heart.update(dt))
 		{
 			//asking heart if we will add new cell
 			this.assignCell();
@@ -101,23 +113,35 @@ public class GameState extends State
 		if(gameModel.getGhostCount() >= 2)
 		{
 			OrganGhost newOrgan = gameModel.getGhost();
-			gameModel.addOrgan(newOrgan.getCenX(), newOrgan.getCenY(), 15, 330);
+			gameModel.addOrgan(newOrgan.getCenX(), newOrgan.getCenY(), 15, 530);
 		}
-		
+		scoreCal.update(dt);
 		//////////////////////////////////////////////////
 		//update game objects
-		Iterator<Cell> cell_itr = gameModel.cells.iterator();
+		Iterator<GameObject> cell_itr = gameModel.cells.iterator();
 		Iterator<Organ> organ_itr = gameModel.organs.iterator();
 		
 		/////////////////////////////////////////////////////////////////
 		//First detect if the cells have to be removed
 		while(cell_itr.hasNext())
 		{
-			Cell updateCell = cell_itr.next();
-			if(updateCell.update(gameModel.getBeat()))
+			GameObject updateCell = cell_itr.next();
+			if(updateCell.Update( gameModel.getBeat(),dt) )
 				
 				gameModel.removeCell(cell_itr);
 		}
+		///////////////////////////////////////////////////////////////
+		//Check what cells should be created
+		int iBuild = -1;
+		while( ++iBuild < gameModel.MAX_BUILD_LIST )
+		{
+			CreateCell crtOrder = gameModel.buildList.get(iBuild);
+			if(crtOrder.isActive())
+				crtOrder.addCell(cellVector);
+			else
+				break;
+		}
+		gameModel.resetBuildCount();
 		
 		/////////////////////////////////////////////////////////////////
 		//Then check cells collision
@@ -126,90 +150,62 @@ public class GameState extends State
 			for(int j = i; j < gameModel.cellCount; j++)
 			{
 				//If there is a collision between 2 cells
-				if(CollisionControl.CircleVsCircle(gameModel.cells.get(i), gameModel.cells.get(j)))
+				if(CollisionControl.CircleVsCircle((Entity)gameModel.cells.get(i), (Entity)gameModel.cells.get(j)))
 				{
 					//If only 1 cell in the array, the 2 cells will be the same so we need to check if it's not the same!
 					if(gameModel.cells.get(i) != gameModel.cells.get(j))
 					{
-						gameModel.cells.get(i).Collide(gameModel.cells.get(j));
-						gameModel.cells.get(j).Collide(gameModel.cells.get(i));
+						gameModel.cells.get(i).Collide((Entity) gameModel.cells.get(j));
+						gameModel.cells.get(j).Collide((Entity) gameModel.cells.get(i));
 					}
+				}
+			}
+			//need to check fat cells against heart!
+			if(((Entity) gameModel.cells.get(i)).getType() == Entity.FATCELL)
+			{
+				if(CollisionControl.InvCircleVsCircle(heart,(Entity)gameModel.cells.get(i)))
+				{
+					this.gameView.gameOver();
+					return false;
 				}
 			}
 		}
 		
-		//////////////////////////////////////////////////////////
-		//check fat cells against other fat cells
-		//there are better ways to do this
-		for(int i=0, endi = gameModel.getFatCount(); i< endi; i++)
-		{
-			///check for collisions with heart
-			if(CollisionControl.InvCircleVsCircle(heart, gameModel.fatties.get(i)))
-			{
-				boolean endgame = false;
-				endgame = true;
-			}
-			for(int j=i, endj = gameModel.getFatCount(); j < endj; j++)
-			{
-
-					if(gameModel.fatties.get(i) != gameModel.fatties.get(j))
-					{
-						if(CollisionControl.CircleVsCircle(gameModel.fatties.get(i), gameModel.fatties.get(j)))
-						{
-							gameModel.fatties.get(i).Collide(gameModel.fatties.get(j));
-							gameModel.fatties.get(j).Collide(gameModel.fatties.get(i));
-						}
-					}
-				
-			}
-	}
-		
 		virusCount = gameModel.getVirusCount();
-		
 		///////////////////////////////////////////////////////////
 		//update the organs
 		while(organ_itr.hasNext())
 		{
 			Organ crtOrgan = organ_itr.next();
-			if(crtOrgan.update(gameModel.getBeat()))
+			if(crtOrgan.Update(gameModel.getBeat(),dt))
 			{
 				gameModel.removeOrgan(organ_itr);
-				if(crtOrgan.getRadius() == GameModel.ORGAN_RADIUS_MIN)
-				{
-					gameModel.addFat((int)crtOrgan.getPosX(), (int)crtOrgan.getPosY(), heart.getPosition(), 24, 20);
-					gameModel.PlaySlop();
-					gameModel.slowerHeart();
-				}
 			}
 			
 			for(int i=0; i< gameModel.cellCount; i++)
 			{
-				Cell crtCell = gameModel.cells.get(i);
+				GameObject crtCell = gameModel.cells.get(i);
 				//If there is a collision between the organ and the cell
-				if(CollisionControl.CircleVsCircle(crtOrgan, crtCell))
+				if(CollisionControl.CircleVsCircle((Entity)crtOrgan, (Entity)crtCell))
 				{
 					//increment points
 					//shorten life of organ, increase radius
-					crtOrgan.Collide(crtCell);
-					heart.incrRun();
-					if(crtCell.getType() == Entity.REDCELL)
+					crtOrgan.Collide((Entity)crtCell);
+					crtCell.Collide((Entity)(crtOrgan));
+					if(((Entity) crtCell).getType() == Entity.REDCELL)
 					{
+						scoreCal.regEvent(GameScore.ORGAN_HIT);
 						gameModel.PlayPlop();
+						heart.incrRun();
 						score += 1;
 					}
 				}
 			}
 		}
 		
-		Iterator<FatCell> fatties_itr = gameModel.fatties.iterator();
-		/////////////////////////////////////
-		//update fat cells
-		while(fatties_itr.hasNext())
-		{
-			FatCell crtFat = fatties_itr.next();
-			crtFat.Update(gameModel.getBeat());
-		}
-		hud.update(elapsed);
+
+		hud.update(dt);
+		return true;
 	}
 	
 	public void gameRender(long elapsed, Canvas dbImage) 
@@ -218,22 +214,14 @@ public class GameState extends State
 		
 		////////////////////////////////////////////////
 		//////how do you make a single draw list?
-		Iterator<Cell> itr = gameModel.cells.iterator();
+		Iterator<GameObject> itr = gameModel.cells.iterator();
 		Iterator<Organ> organ_itr = gameModel.organs.iterator();
-		Iterator<FatCell> fatties_itr = gameModel.fatties.iterator();
-		
-		//draw fat
-		while(fatties_itr.hasNext())
-		{
-			FatCell crtFat = fatties_itr.next();
-			crtFat.Draw(dbImage);
-		}
 		
 		//Draw cells
 		while(itr.hasNext())
 		{
-			Cell drawCell = itr.next();
-			drawCell.Draw(dbImage);
+			GameObject drawCell = itr.next();
+			((Entity) drawCell).Draw(dbImage);
 		}
 		//Draw organs
 		while(organ_itr.hasNext())
@@ -251,8 +239,10 @@ public class GameState extends State
 		dbImage.drawText("Score: "+score, 10, 20, ParserView.textColor);
 	}
 	
-	public void slowUpdate( long stepTime )
+	public void slowUpdate( long stepTime, int frCount )
 	{
+		avTime = stepTime / frCount;
+		avTime *= 0.000001;
 		scoreCal.calScore(stepTime);
 	}
 	
@@ -268,6 +258,24 @@ public class GameState extends State
 			return true;
 		else
 			return false;
+	}
+	
+	private void addFat()
+	{
+		int rndNumberX = (int) (rNum.Random(heart.getCurRad()) - (heart.getCurRad() * 0.5) );
+		int rndNumberY = (int) (rNum.Random(heart.getCurRad()) - (heart.getCurRad() * 0.5) );
+		
+		if(rndNumberX >= 0)
+			rndNumberX += 140;
+		else
+			rndNumberX -= 140;
+		if(rndNumberY >= 0)
+			rndNumberY += 90;
+		else
+			rndNumberY -= 90;
+		
+		gameModel.addFat(heart.getX() + rndNumberX, heart.getY() + rndNumberY,
+				heart.getPosition(), 24, 20);
 	}
 	
 	private void checkVirus()
@@ -286,10 +294,12 @@ public class GameState extends State
 		input.touch(event);
 		if(event.getAction() == MotionEvent.ACTION_DOWN)
 			hud.interact((int) event.getX(), (int) event.getY());
+	//	gameModel.addCell( (int)event.getX(), (int)event.getY(), new Vector2D(-1,1), Entity.VIRUS);
 		return false;
 	}
 	public void switchCellType(int newCellType)
 	{
 		currentCellType = newCellType;
 	}
+	public int getCellType()			{	return currentCellType;	}
 }

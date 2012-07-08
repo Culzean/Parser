@@ -18,21 +18,27 @@ import game.Entity;
 import game.GameModel;
 import game.EntityMouvementBehavior.FatCellMovement;
 import game.EntityMouvementBehavior.FatCellRoll;
+import gameEngine.GameObject;
 import gameEngine.ParserView;
 import game.EntityMouvementBehavior.*;
-public class FatCell extends Cell 
+public class FatCell extends Cell implements GameObject
 {
 	private boolean onWall = false;
 	Vector2D vfatPair = null;
 	FatCell collides = null;
 	FatCellMovement normalMove = null;
-
-	public boolean getWall() { return onWall; };
+	private final int DEF_RAD;
+	private final int MAX_RAD;
+	private final int MIN_RAD;
+	
 	
 	public FatCell (int startX, int startY, Vector2D istart2d, int rad, Resources viewRes, GameModel refModel)
 	{
 		super(startX, startY, istart2d, rad, viewRes, refModel);
 		normalMove = new FatCellMovement((int)istart2d.x, (int)istart2d.y, startX, startY);
+		DEF_RAD = rad;
+		MAX_RAD = (int) (refModel.getGameHeight() * 0.14);
+		MIN_RAD = (int) (refModel.getGameHeight() * 0.02);
 		this.setMouvementBehavior( normalMove );
 		getEntityColor().setColor(Color.YELLOW);
 		this.setType(Entity.FATCELL);
@@ -62,15 +68,36 @@ public class FatCell extends Cell
 			else if(e1 != collides)
 				this.HitWall();
 		}
+		else if(e1.getType() == Entity.REDCELL)
+		{
+			//clamp to val?
+			this.setRadius((int) (getRadius() + ( e1.getRadius() * 0.8) ));
+		}
+		else if(e1.getType() == Entity.PLATELET)
+		{
+			this.setRadius((int) (getRadius() - ( e1.getRadius() * 0.8) ));
+		}
 		else
 			super.Collide(e1);
 	}
 	
-	public boolean Update(double beat)
+	public boolean Update(double beat, double dt)
 	{
-		//if(!onWall)
+		if(this.getRadius() > MAX_RAD)
 		{
-			this.getMouvementBehavior().update(this, beat);
+			//reset radius + addnew fat
+			model.orderCell().order(Entity.FATCELL, DEF_RAD, (int)getPosX(), (int)getPosY());
+			model.PlaySlop();
+			model.slowerHeart();
+			this.setRadius(DEF_RAD);
+			onWall = false;
+		}
+		else if(this.getRadius() < MIN_RAD)
+			this.setRadius(MIN_RAD);
+		
+		if(!onWall)
+		{
+			this.getMouvementBehavior().update(this, beat, dt);
 			if(this.getPosX() > (ParserView.windowWidth - this.getRadius()))
 			{
 				//change state to on wall and change pos to wall plus rad
@@ -94,7 +121,36 @@ public class FatCell extends Cell
 				this.setPosY(0 + this.getRadius());
 			}
 		}
-		return onWall;
+		else{
+			if( this.getPosX() > (ParserView.windowWidth + radius) ||
+					this.getPosX() < (0 - radius) ||
+					this.getPosY() > (ParserView.windowHeight + radius) ||
+					this.getPosY() < (0 - radius) )
+					{
+						OutOfBounds();
+					}
+			if(lapVec.x > 0 || lapVec.y > 0)
+			{
+				this.ResolveCol();
+				lapVec.x = 0; lapVec.y = 0;
+			}
+		}
+		return false;
+	}
+	
+	protected void OutOfBounds()
+	{	
+		if( this.getPosX() < (0) )
+			this.setPosX(getPosX() + 2);
+		else if( this.getPosX() > (ParserView.windowWidth) )
+			this.setPosX( getPosX() - 2 );
+		if( this.getPosY() < (0) )
+			this.setPosY( (getPosY() + 2) );
+		else if( this.getPosY() > (ParserView.windowHeight) )
+			this.setPosY((getPosY() - 2));
+		
+		if(!onWall)
+			HitWall();
 	}
 	
 	private void HitWall()
@@ -103,4 +159,6 @@ public class FatCell extends Cell
 		onWall = true;
 		this.setMouvementBehavior(new FatCellStop());
 	}
+	
+	public boolean getWall() { return onWall; };
 }

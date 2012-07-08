@@ -27,7 +27,9 @@ public class Heart
 	private int radius, tempRad;
 	private int scale;
 	private GameModel gameModel;
+	private final float DEF_RAD_RATIO = 0.18f;
 	private int runCount;
+	private float vol = 0.6f;
 	static final int RUN_LIMIT = 3;
 	static final Paint heartColor = new Paint();
 	private int newHeartWidth, newHeartHeight, hearWidth, heartHeight;
@@ -51,11 +53,11 @@ public class Heart
 	//heart update function
 	//returns true if it's time to introduce a new cell
 	//not sure if this is best place for this logic
-	public boolean update()
+	public boolean update(long dt)
 	{
 		boolean addCell = false;
 		
-		float beat = gameModel.incBeat();
+		float beat = gameModel.incBeat(dt);
 		int newScale = (int)-(beat * 100);
 		
 		if(beat > 0.05)
@@ -69,11 +71,11 @@ public class Heart
 		{
 			////////////
 			//later will implement different test depending on the cell type selected
-			int testRad = radius - ((int)-(gameModel.getNextBeat() * 100));
+			int testRad = radius - ((int)(gameModel.getNextBeat() * 100));
 			tempRad = radius * 2;
 			addCell = true;
 			//clear the current trajectory only if the wave is finished
-			if(testRad < (radius * 2) && gameModel.getPlayerIn() != null)
+			if( (testRad < (radius * 2) ) && gameModel.getPlayerIn() != null)
 				{
 					gameModel.getPlayerIn().setInPlay(false);
 					gameModel.setPlayerIn(null);
@@ -103,8 +105,14 @@ public class Heart
 	public int getY(){ return (int)position.y; }
 	public Vector2D getPosition() { return position; }
 	public int getRadius() { return radius; }
+	public void setRadius( int newRad )					{ this.radius = newRad; }
+	public void setDefRad(int winHeight)				{	this.radius = (int) (DEF_RAD_RATIO * winHeight);	}
 	public int getCurRad() { return radius * scale; }
 	public int getRun() { return runCount; }
 	public void incrRun() {	runCount++;	}
+
+	public float getVol() {		return vol;	}
+
+	public void setVol(float vol) {		this.vol = vol;	}
 }
 

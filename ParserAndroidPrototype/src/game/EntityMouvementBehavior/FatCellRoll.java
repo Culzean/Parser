@@ -34,7 +34,7 @@ public class FatCellRoll extends EntityMouvementBehavior{
 			rot = rotNeg;
 	}
 	
-	public void update(Entity e1, double heartBeat) {
+	public void update(Entity e1, double heartBeat, double dt) {
 		
 		//rotate vector
 		vRoll.x = ( vRoll.x * Math.cos(rot) ) - ( vRoll.y * Math.sin(rot) );

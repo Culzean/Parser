@@ -29,17 +29,19 @@ public abstract class State
 		windowHeight = _windowHeight;
 		gameView = gView;
 		gameModel = modelRef;
-		init();
+		//init();
 	}
 	
 	public abstract void init();
-	public abstract void update(long elapsed);
-	public abstract void slowUpdate(long dt);
+	public abstract boolean update(long elapsed);
+	public abstract void slowUpdate(long dt, int frCount);
 	public abstract void gameRender(long elapsed, Canvas dbImage);
 	public abstract boolean onTouch(MotionEvent event);
 	public abstract boolean onSensorChanged(SensorEvent event);
+	public abstract void switchCellType(int newCellType);
 	
 	public int getWindowWidth() { return windowWidth; }
 	public int getWindowHeight() { return windowHeight; }
 	public ParserView getGameView() { return gameView; }
+	
 }

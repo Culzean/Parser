@@ -14,6 +14,7 @@ package game.CellType;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import events.Vector2D;
@@ -21,10 +22,11 @@ import game.Entity;
 import game.GameModel;
 import game.EntityMouvementBehavior.Harmonic;
 import game.test.R;
+import gameEngine.GameObject;
 import gameEngine.ParserView;
 import gameEngine.Sprite;
 
-public class Cell extends Entity
+public class Cell extends Entity implements GameObject
 {
 	protected int radius;
 	private double ACCELERATION;
@@ -51,32 +53,39 @@ public class Cell extends Entity
 		//By default cells are red
 		this.setEntityColor(new Paint(Color.RED));
 	}
-	public boolean update(double beat)
+	public boolean Update(double beat, double dt)
 	{
 		//update parent (entity)
-		super.Update(beat);
+		super.Update(beat, dt);
 		
 		//Update the entity mouvement if exist
 		if(getMouvementBehavior() != null)
-			getMouvementBehavior().update(this, beat);
+			getMouvementBehavior().update(this, beat, dt);
 		
-		//apply friction to slow
-		if(this.getPosX() > (ParserView.windowWidth + radius) || this.getPosX() < (0 - radius) || this.getPosY() > (ParserView.windowHeight + radius) || this.getPosY() < (0 - radius))
+		//test on edges
+		if( this.getPosX() > (ParserView.windowWidth + radius) ||
+			this.getPosX() < (0 - radius) ||
+			this.getPosY() > (ParserView.windowHeight + radius) ||
+			this.getPosY() < (0 - radius) )
 			{
-				if(!isRemoved() && this.getType() == VIRUS)
-					model.disinfect();
-				setRemove(true);
+				OutOfBounds();
 			}
+		
+		if(lapVec.x > 0 || lapVec.y > 0)
+		{
+			this.ResolveCol();
+			lapVec.x = 0; lapVec.y = 0;
+		}
 		
 		return isRemoved();
 	}
 	
-	public void infect()
+	public void infect( Vector2D iDir, float iAngle )
 	{
 		if(this.getType() != Entity.VIRUS)
 		{
 			getEntityColor().setColor(Color.GREEN);
-			this.setMouvementBehavior(new Harmonic());
+			this.setMouvementBehavior(new Harmonic(iDir, iAngle));
 			this.setType(Entity.VIRUS);
 			Bitmap bitmapSprite = BitmapFactory.decodeResource(viewResources, R.drawable.virus);
 			sprite = new Sprite(bitmapSprite, 1, 1, 1, 1);
@@ -89,4 +98,21 @@ public class Cell extends Entity
 	///getters and setters
 	/////////////////////////////////////////////////
 	public double getAccel() { return ACCELERATION;	} 	public void setAccel(double sPEED) { ACCELERATION = sPEED; }
+
+	@Override
+	public void ResolveCol() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void OutOfBounds() {
+		// TODO Auto-generated method stub
+		this.setRemove(true);
+	}
+
+	public void Draw(Canvas canvas) {
+		super.Draw(canvas);
+		
+	}
 }

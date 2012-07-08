@@ -16,12 +16,13 @@ package events;
 	{
 		//main acceleration to the boundary
 		//and secondary acceleration to the left and right this target
-		FAST (5, 5),
-		NORMAL (3,3),
-		DRIFT (1,1),
-		SLOW (-2,-2),
-		VERYSLOW (-4,-4);
-		
+		//velocity in psms-1
+		FAST (1.1, 1.1),//these numbers distort the cell trajectories in a rectangle game envirnoment
+		NORMAL (0.7,0.7),
+		DRIFT (0.44,0.44),
+		SLOW (0.1,0.1),
+		VERYSLOW (-4,-4),
+		ROLL (0.02,0.02);
 		
 		private final double dBound, dSecd;
 		Acceleration(double boundary, double secondary){

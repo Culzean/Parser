@@ -7,16 +7,17 @@ import game.Entity;
 import game.GameModel;
 import game.GameScore;
 import game.GameState;
+import game.State;
 import game.test.R;
 import gameEngine.Sprite;
 import hud.ScoreBoard;
 
 public class HUD
 {
-	private Button redCell;
-	private Button whiteCell;
-	private Button platelet;
-	private GameState gameStateRef;
+	protected Button redCell;
+	protected Button whiteCell;
+	protected Button platelet;
+	private State gameStateRef;
 	private ScoreBoard scoreBoard = null;
 	private int SPACER;
 	private int INDENT;
@@ -27,12 +28,37 @@ public class HUD
 	private int SCR_WIDTH;
 	private int SCR_HEIGHT;
 	
-	public HUD(GameState stateRef, GameScore scoreRef)
+	public HUD(State stateRef, GameScore scoreRef)
 	{
 		gameStateRef = stateRef;
 		setPositions();
 		CreateButtons();
+		Init();
 		scoreBoard = new ScoreBoard( SCR_WIDTH - (INDENT*2), (int)(SCR_HEIGHT * 0.54), BOARD_WIDTH, BOARD_WIDTH , scoreRef);
+	}
+	
+	public HUD(State stateRef)
+	{
+		gameStateRef = stateRef;
+		setPositions();
+		CreateButtons();
+	}
+	
+	private void Init()
+	{
+		int sel = ((GameState) gameStateRef).getCellType();
+		if(sel == Entity.REDCELL)
+		{
+			redCell.setSelected(true);
+		}
+		else if(sel == Entity.WHITECELL)
+		{
+			whiteCell.setSelected(true);
+		}
+		else if(sel == Entity.PLATELET)
+		{
+			platelet.setSelected(true);
+		}
 	}
 	
 	public void update(long dt){
@@ -53,7 +79,7 @@ public class HUD
 		scoreBoard.draw(dbimage);
 	}
 	
-	public void interact(int clickX, int clickY)
+	public boolean interact(int clickX, int clickY)
 	{
 		if(redCell.clicked(clickX, clickY))
 			{
@@ -63,7 +89,7 @@ public class HUD
 				whiteCell.setSelected(false);
 				platelet.setSelected(false);
 			}
-		if(whiteCell.clicked(clickX, clickY))
+		else if(whiteCell.clicked(clickX, clickY))
 			{
 				gameStateRef.switchCellType(Entity.WHITECELL);
 				//highLighter.setPosX((int) (SCR_WIDTH * 0.5)	- SPACER);
@@ -71,7 +97,7 @@ public class HUD
 				whiteCell.setSelected(true);
 				platelet.setSelected(false);
 			}
-		if(platelet.clicked(clickX, clickY))
+		else if(platelet.clicked(clickX, clickY))
 			{
 				gameStateRef.switchCellType(Entity.PLATELET);
 				//highLighter.setPosX((int) (SCR_WIDTH * 0.5)	+ SPACER);
@@ -79,6 +105,10 @@ public class HUD
 				whiteCell.setSelected(false);
 				platelet.setSelected(true);//Button should be in an array
 			}
+		else
+			return false;
+		
+		return true;
 	}
 	
 	private void setPositions()
@@ -124,7 +154,5 @@ public class HUD
 		sprite.setAlpha(220);
 		platelet.setLarge(sprite, SELECTED_RAD);
 		
-		//highLighter = new HighLight( (int) (SCR_WIDTH * 0.5) - SPACER, BUTTONY, SELECTED_RAD, SELECTED_RAD );
-		//highLighter.setPaint(45, 44, 220, 165);
 	}
 }

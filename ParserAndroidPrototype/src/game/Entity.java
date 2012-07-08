@@ -21,18 +21,22 @@ import events.Acceleration;
 import events.Vector2D;
 import game.EntityMouvementBehavior.EntityMouvementBehavior;
 import game.test.R;
+import gameEngine.GameObject;
 import gameEngine.Sprite;
 
-public abstract class Entity 
+public abstract class Entity
 {
 	//Defining all entity type here
-	public static final int ORGAN = 1;
-	public static final int CELL = 2;
-	public static final int REDCELL = 3;
-	public static final int WHITECELL = 4;
-	public static final int PLATELET = 5;
-	public static final int VIRUS = 6;
-	public static final int FATCELL = 7;
+	public static final int ORGAN = 0;
+	public static final int CELL = 1;
+	public static final int REDCELL = 2;
+	public static final int WHITECELL = 3;
+	public static final int PLATELET = 4;
+	public static final int VIRUS = 5;
+	public static final int FATCELL = 6;
+	public static final int CELLPOP = 7;
+	
+	public static final int NUM_ENT_TYPES = 8;
 	
 	protected double posX, posY;
 	protected double velX, velY;
@@ -42,6 +46,7 @@ public abstract class Entity
 	protected Paint entityColor;
 	protected EntityMouvementBehavior mouvementBehavior;
 	protected Vector2D start2d;
+	protected Vector2D colVec,lapVec;
 
 	protected Sprite sprite;
 	protected Resources viewResources;
@@ -51,6 +56,8 @@ public abstract class Entity
 	{
 		viewResources = viewRes;
 		start2d = new Vector2D(0,0);
+		colVec = new Vector2D(0,0);
+		lapVec = new Vector2D(0,0);
 		this.setPosX(posX); 
 		this.setPosY(posY);
 		this.setRadius(radius);
@@ -62,7 +69,7 @@ public abstract class Entity
 	}
 	
 	//By default an entity do nothing
-	public boolean Update(double beat) { 
+	public boolean Update(double beat, double dt) { 
 		if(sprite != null)
 			sprite.update();
 		return isRemoved(); 
@@ -74,7 +81,7 @@ public abstract class Entity
 		{
 			if(sprite != null)
 			{
-				sprite.setLocation((int)posX-sprite.getWidth()/2, (int)posY-sprite.getHeight()/2); //Have to center the sprite on the circle
+				sprite.setLocation((int) (posX-sprite.getWidth()*0.5), (int) (posY-sprite.getHeight()*0.5)); //Have to center the sprite on the circle
 				sprite.draw(canvas);
 			}
 			else
@@ -91,17 +98,36 @@ public abstract class Entity
 	//Default behavior push both entity away from each other
 	public void Collide(Entity e1)
 	{
-		if(this.posX > e1.getPosX())
+		if(Math.abs(posX - e1.posX) > Math.abs(posY - e1.posY))
 		{
-			e1.setPosX(e1.getPosX() - 1);
-			this.posX = this.posX + 1;
+			if(this.posX > e1.getPosX())
+			{
+				e1.setPosX(e1.getPosX() - 1);
+				this.posX = this.posX + 1;
+			}
+			else
+			{
+				e1.setPosX(e1.getPosX() + 1);
+				this.posX = this.posX - 1;
+			}
 		}
 		else
 		{
-			e1.setPosX(e1.getPosX() + 1);
-			this.posX = this.posX - 1;
+			if(this.posY > e1.getPosY())
+			{
+				e1.setPosY(e1.getPosY() - 1);
+				this.posY = this.posY + 1;
+			}
+			else
+			{
+				e1.setPosY(e1.getPosY() + 1);
+				this.posY = this.posY - 1;
+			}
 		}
 	}
+	
+	public abstract void ResolveCol();
+	protected abstract void OutOfBounds();
 	
 	public Acceleration acceRate(double beat)
 	{
@@ -121,7 +147,8 @@ public abstract class Entity
 	public double getVelX() { return velX; }				public void setVelX(double velX) { this.velX = velX; }
 	public double getVelY() { return velY; }				public void setVelY(double velY) { this.velY = velY; }
 	public int getRadius() 	{ return radius; }				public void setRadius(int newRad) { int diff = radius - newRad;	this.setPosX(this.getPosX() + diff); this.setPosY(this.getPosY() + diff); this.radius = newRad; }
-	public boolean isRemoved() { return remove; }			public void setRemove(boolean remove) { this.remove = remove; }
+	public boolean isRemoved() { return remove; }
+	public void setRemove(boolean remove) { this.remove = remove; }
 	public int getType() { return type; }					public void setType(int type) { this.type = type; }
 	public Paint getEntityColor() {	return entityColor;	} 	public void setEntityColor(Paint entityColor) { this.entityColor = entityColor; }
 	

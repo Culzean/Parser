@@ -64,6 +64,11 @@ public class SoundManager {
 		return true;
 	}
 	
+	public boolean PlaySound( int SoundID, float leftVol, float rightVol,  int loop, float PlyRate )
+	{
+		mainSndPool.play(SoundID, leftVol, rightVol, 1, loop, PlyRate);
+		return true;
+	}
 	public void ReleaseSounds()
 	{
 		mainSndPool.release();

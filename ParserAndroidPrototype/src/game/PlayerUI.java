@@ -100,6 +100,7 @@ public class PlayerUI
 			//then maybe we need to add a new input
 				if(inputArray[outputIndex].isInPlay())
 				{
+					
 					gameModel.setPlayerIn(inputArray[outputIndex]);
 					if(--outputIndex < 0)
 						outputIndex = inputArray.length-1;
