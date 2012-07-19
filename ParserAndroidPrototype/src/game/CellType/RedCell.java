@@ -39,6 +39,28 @@ public class RedCell extends Cell implements GameObject
 	
 	public void Collide(Entity e1)
 	{
+		if(e1.getType() == Entity.REDCELL)
+		{
+			ColPush(e1);	
+		}
+		else if(e1.getType() == Entity.VIRUS)
+		{
+			ColPush(e1);
+			this.infect( e1.getMouvementBehavior().getStartDir(), e1.getMouvementBehavior().getAngle() );
+		}
+		else if(e1.getType() == Entity.OXYGEN)
+		{
+			this.setRemove(true);
+			ColPush(e1);
+		}
+		else if(e1.getType() == Entity.FATCELL)
+			this.setRemove(true);
+
+		
+	}
+	
+	private void ColPush(Entity e1)
+	{
 		this.colVec.x = ( e1.getPosX() - this.getPosX() );
 		this.colVec.y = ( e1.getPosY() - this.getPosY() );
 		
@@ -48,33 +70,26 @@ public class RedCell extends Cell implements GameObject
 		this.lapVec.x = Math.abs( colVec.x * overlap * 0.5 );
 		this.lapVec.y = Math.abs( colVec.y * overlap * 0.5 );
 
-		if(e1.getType() == Entity.VIRUS)
-			this.infect( e1.getMouvementBehavior().getStartDir(), e1.getMouvementBehavior().getAngle() );
-
-		else if(e1.getType() == Entity.FATCELL)
-			this.setRemove(true);
-		else if (e1.getType() == Entity.ORGAN)
-			this.setRemove(true);
-		
 	}
 	
 	public void ResolveCol()
 	{
 		//decide how to resolve the collision
 		if( colVec.x < 0 )//to left on screen
-			this.setPosX( this.getPosX() + lapVec.x );
+			this.setPosX( (float) (this.getPosX() + lapVec.x) );
 		else
-			this.setPosX( this.getPosX() - lapVec.x );
+			this.setPosX( (float) (this.getPosX() - lapVec.x) );
 				
 		if( colVec.y < 0 )//above on screen
-			this.setPosY( this.getPosY() + lapVec.y );
+			this.setPosY( (float) (this.getPosY() + lapVec.y) );
 		else
-			this.setPosY( this.getPosY() - lapVec.y );
+			this.setPosY( (float) (this.getPosY() - lapVec.y) );
 	}
 	
 	protected void OutOfBounds()
 	{
 		model.scoreCal.regEvent(GameScore.RED_BOUNDS);
+		model.orderCell().order(FATCELL, this.getRadius(), (int)posX, (int)posY);
 		super.OutOfBounds();
 	}
 }

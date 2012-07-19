@@ -120,7 +120,7 @@ public class HUD
 		SPACER = (int) (SCR_WIDTH * 0.14);
 		BUTTONY = (int) ( SCR_HEIGHT - (SCR_HEIGHT * 0.2));
 		BUTTON_RAD = (int) (SCR_WIDTH * 0.11);
-		SELECTED_RAD = (int) (BUTTON_RAD * 1.34);
+		SELECTED_RAD = (int) (BUTTON_RAD * 1.28);
 		BOARD_WIDTH = (int) ( SCR_WIDTH * 0.19 );
 		INDENT = (int) ( SCR_WIDTH * 0.11 );
 	}

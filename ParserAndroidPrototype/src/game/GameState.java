@@ -17,6 +17,7 @@ import java.util.TimerTask;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.hardware.SensorEvent;
 import android.view.MotionEvent;
 import events.CreateCell;
@@ -30,7 +31,13 @@ public class GameState extends State
 	private PlayerUI input;
 	private Vector2D cellVector; // to set the direction of the cells
 	private GameScore scoreCal;
+	private CollisionControl colRef;
 	private long avTime; //average time per frame in ms
+	
+	//temp var to measure collision time
+	private int degCount;
+	private long debugRun;
+	private long debugPrev;
 	
 	//Random number generator
 	private RandomNumGen rNum;
@@ -76,20 +83,25 @@ public class GameState extends State
 		rNum.Randomize();
 		
 		hud = new HUD(this, scoreCal);
+		colRef = new CollisionControl(gameModel);
 		
 		gameModel.setGameHeight(getWindowHeight());
 		gameModel.setGameWidth(getWindowWidth());
 		
-		gameModel.addOrgan(rNum.Random((int)ParserView.windowWidth), rNum.Random((int)ParserView.windowHeight), 15, 500);
+		gameModel.addOxygen(rNum.Random((int)ParserView.windowWidth), rNum.Random((int)ParserView.windowHeight), 15, 50);
 		Bitmap backgroundSprite = BitmapFactory.decodeResource(gameView.getResources(), R.drawable.bg);
 		background = new Sprite(backgroundSprite, 1, 1, 1, 1);
 		background.resize(windowWidth, windowHeight);
+		
+		assignOrgans();
 		
 		int randStartFat = (rNum.Random(22) + 6);
 		for(int i = 0; i< randStartFat; ++i)
 			this.addFat();
 		//Play the heartbeat sound
 		gameModel.PlayHeartBeat( heart.getVol() );//mono?
+		debugAv = (long) 0;
+		debugRun = (long) 0;
 	}
 	
 	public boolean update(long dt)
@@ -113,13 +125,12 @@ public class GameState extends State
 		if(gameModel.getGhostCount() >= 2)
 		{
 			OrganGhost newOrgan = gameModel.getGhost();
-			gameModel.addOrgan(newOrgan.getCenX(), newOrgan.getCenY(), 15, 530);
+			gameModel.addOxygen(newOrgan.getCenX(), windowHeight, 15, 118);
 		}
 		scoreCal.update(dt);
 		//////////////////////////////////////////////////
 		//update game objects
 		Iterator<GameObject> cell_itr = gameModel.cells.iterator();
-		Iterator<Organ> organ_itr = gameModel.organs.iterator();
 		
 		/////////////////////////////////////////////////////////////////
 		//First detect if the cells have to be removed
@@ -143,66 +154,21 @@ public class GameState extends State
 		}
 		gameModel.resetBuildCount();
 		
-		/////////////////////////////////////////////////////////////////
-		//Then check cells collision
-		for(int i = 0; i < gameModel.cellCount; i++)
-		{
-			for(int j = i; j < gameModel.cellCount; j++)
+		debugPrev = System.nanoTime();
+		/////////////////////////////////
+		//start brute force collision check
+		colRef.BruteForce();
+		//seperate check for the heart
+		if( !colRef.CheckHeart() )
 			{
-				//If there is a collision between 2 cells
-				if(CollisionControl.CircleVsCircle((Entity)gameModel.cells.get(i), (Entity)gameModel.cells.get(j)))
-				{
-					//If only 1 cell in the array, the 2 cells will be the same so we need to check if it's not the same!
-					if(gameModel.cells.get(i) != gameModel.cells.get(j))
-					{
-						gameModel.cells.get(i).Collide((Entity) gameModel.cells.get(j));
-						gameModel.cells.get(j).Collide((Entity) gameModel.cells.get(i));
-					}
-				}
+				gameView.gameOver();
+				return false;
 			}
-			//need to check fat cells against heart!
-			if(((Entity) gameModel.cells.get(i)).getType() == Entity.FATCELL)
-			{
-				if(CollisionControl.InvCircleVsCircle(heart,(Entity)gameModel.cells.get(i)))
-				{
-					this.gameView.gameOver();
-					return false;
-				}
-			}
-		}
+		
+		debugRun = ( (System.nanoTime() - debugPrev) + debugRun );
+		++degCount;
 		
 		virusCount = gameModel.getVirusCount();
-		///////////////////////////////////////////////////////////
-		//update the organs
-		while(organ_itr.hasNext())
-		{
-			Organ crtOrgan = organ_itr.next();
-			if(crtOrgan.Update(gameModel.getBeat(),dt))
-			{
-				gameModel.removeOrgan(organ_itr);
-			}
-			
-			for(int i=0; i< gameModel.cellCount; i++)
-			{
-				GameObject crtCell = gameModel.cells.get(i);
-				//If there is a collision between the organ and the cell
-				if(CollisionControl.CircleVsCircle((Entity)crtOrgan, (Entity)crtCell))
-				{
-					//increment points
-					//shorten life of organ, increase radius
-					crtOrgan.Collide((Entity)crtCell);
-					crtCell.Collide((Entity)(crtOrgan));
-					if(((Entity) crtCell).getType() == Entity.REDCELL)
-					{
-						scoreCal.regEvent(GameScore.ORGAN_HIT);
-						gameModel.PlayPlop();
-						heart.incrRun();
-						score += 1;
-					}
-				}
-			}
-		}
-		
 
 		hud.update(dt);
 		return true;
@@ -215,19 +181,12 @@ public class GameState extends State
 		////////////////////////////////////////////////
 		//////how do you make a single draw list?
 		Iterator<GameObject> itr = gameModel.cells.iterator();
-		Iterator<Organ> organ_itr = gameModel.organs.iterator();
 		
 		//Draw cells
 		while(itr.hasNext())
 		{
 			GameObject drawCell = itr.next();
 			((Entity) drawCell).Draw(dbImage);
-		}
-		//Draw organs
-		while(organ_itr.hasNext())
-		{
-			Organ drawCell = organ_itr.next();
-			drawCell.Draw(dbImage);
 		}
 		
 		input.draw(dbImage);
@@ -244,6 +203,11 @@ public class GameState extends State
 		avTime = stepTime / frCount;
 		avTime *= 0.000001;
 		scoreCal.calScore(stepTime);
+		
+		//degub info
+		debugAv = debugRun / (degCount);
+		debugRun = 0;
+		degCount = 0;
 	}
 	
 	private boolean assignCell()
@@ -276,6 +240,23 @@ public class GameState extends State
 		
 		gameModel.addFat(heart.getX() + rndNumberX, heart.getY() + rndNumberY,
 				heart.getPosition(), 24, 20);
+	}
+	
+	private void assignOrgans()
+	{
+		String names[] = { "Brain", "Liver", "Kidney" };
+		int colors[] = { 205, 115, 70 };
+		
+		assert (names.length != gameModel.NUMB_ORGANS);
+		
+		gameModel.addOrgan((int)(windowWidth * 0.2), (int)(windowHeight * 0.1),
+				(int)(heart.getRadius() * 0.8), colors, (String)names[0]);
+		
+		gameModel.addOrgan((int)(windowWidth * 0.9), (int)(windowHeight * 0.4),
+				(int)(heart.getRadius() * 1.8), colors, (String)names[1]);
+		
+		gameModel.addOrgan((int)(windowWidth * 0.14), (int)(windowHeight * 0.77),
+				(int)(heart.getRadius() * 0.4), colors, (String)names[2]);
 	}
 	
 	private void checkVirus()

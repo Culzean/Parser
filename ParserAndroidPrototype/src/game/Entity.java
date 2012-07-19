@@ -27,19 +27,20 @@ import gameEngine.Sprite;
 public abstract class Entity
 {
 	//Defining all entity type here
-	public static final int ORGAN = 0;
-	public static final int CELL = 1;
-	public static final int REDCELL = 2;
-	public static final int WHITECELL = 3;
-	public static final int PLATELET = 4;
+	public static final int ORGAN = 3;
+	public static final int CELL = 4;
+	public static final int REDCELL = 1;
+	public static final int WHITECELL = 0;
+	public static final int PLATELET = 2;
 	public static final int VIRUS = 5;
 	public static final int FATCELL = 6;
 	public static final int CELLPOP = 7;
+	public static final int OXYGEN = 8;
 	
 	public static final int NUM_ENT_TYPES = 8;
 	
-	protected double posX, posY;
-	protected double velX, velY;
+	protected float posX, posY;
+	protected float velX, velY;
 	protected int radius, radScale;
 	protected boolean remove;
 	protected int type;
@@ -52,15 +53,15 @@ public abstract class Entity
 	protected Resources viewResources;
 	
 	//Constructor
-	public Entity(double posX, double posY, int radius, int type, Resources viewRes)
+	public Entity(float posX, float posY, int radius, int type, Resources viewRes)
 	{
 		viewResources = viewRes;
 		start2d = new Vector2D(0,0);
 		colVec = new Vector2D(0,0);
 		lapVec = new Vector2D(0,0);
+		this.setRadius(radius);
 		this.setPosX(posX); 
 		this.setPosY(posY);
-		this.setRadius(radius);
 		this.setType(type);
 		this.setRadScale(1);
 		//By default the entity use the color WHITE
@@ -90,7 +91,7 @@ public abstract class Entity
 	}
 	
 	//Teleport the entity to the position given in parameter
-	public void moveTo(double x, double y)
+	public void moveTo(float x, float y)
 	{
 		setPosX((int) x); setPosY((int) y);
 	}
@@ -142,11 +143,13 @@ public abstract class Entity
 	
 	//Getters/Setters
 	public int getRadScale() { return radScale;	}		public void setRadScale(int radScale) {	this.radScale = radScale; }
-	public double getPosX() { return posX; }				public void setPosX(double posX) { this.posX = posX; }
-	public double getPosY() { return posY; }				public void setPosY(double posY) { this.posY = posY; }
-	public double getVelX() { return velX; }				public void setVelX(double velX) { this.velX = velX; }
-	public double getVelY() { return velY; }				public void setVelY(double velY) { this.velY = velY; }
-	public int getRadius() 	{ return radius; }				public void setRadius(int newRad) { int diff = radius - newRad;	this.setPosX(this.getPosX() + diff); this.setPosY(this.getPosY() + diff); this.radius = newRad; }
+	public void setPosX(float posX)	{ this.posX = posX; }
+	public void setPosY(float posY)	{ this.posY = posY; }
+	public float getPosY() { return posY; }
+	public float getPosX() { return posX; }
+	public float getVelX() { return velX; }				public void setVelX(float velX) { this.velX = velX; }
+	public float getVelY() { return velY; }				public void setVelY(float velY) { this.velY = velY; }
+	public int getRadius() 	{ return radius; }				
 	public boolean isRemoved() { return remove; }
 	public void setRemove(boolean remove) { this.remove = remove; }
 	public int getType() { return type; }					public void setType(int type) { this.type = type; }
@@ -157,11 +160,16 @@ public abstract class Entity
 	public int getCenX() { return (int) (posX + this.getRadius()); } public int getCenY() {	return (int) (posY + this.getRadius());	}
 	
 	//Spawn velocity
-	public double getStartDX() { return start2d.x; }		public void setStartDX(double startDX) { this.start2d.x = startDX; }
-	public double getStartDY() { return start2d.y; }		public void setStartDY(double startDY) { this.start2d.y = startDY; }
+	public float getStartDX() { return (float) start2d.x; }		public void setStartDX(float startDX) { this.start2d.x = startDX; }
+	public float getStartDY() { return (float) start2d.y; }		public void setStartDY(float startDY) { this.start2d.y = startDY; }
 	//same as a 2d vector
 	public Vector2D getStart2d()	{ return start2d; }		public void setStart2d(Vector2D newStart)	{ this.start2d = newStart; }
 	
+	
+	public void setRadius(int newRad)
+	{
+		this.radius = newRad;
+	}
 	
 	//Mouvement behavior
 	public EntityMouvementBehavior getMouvementBehavior(){ return mouvementBehavior; }

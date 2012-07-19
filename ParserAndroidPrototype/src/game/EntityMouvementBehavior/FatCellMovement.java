@@ -21,8 +21,8 @@ public class FatCellMovement extends EntityMouvementBehavior{
 
 	public void update(Entity e1, double heartBeat, double dt) {
 		
-		e1.setPosX((e1.getPosX() + vMovement.x));
-		e1.setPosY((e1.getPosY() + vMovement.y));
+		e1.setPosX((float) (e1.getPosX() + vMovement.x));
+		e1.setPosY((float) (e1.getPosY() + vMovement.y));
 		
 	}
 

@@ -11,6 +11,7 @@ import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -46,6 +47,7 @@ public class ParserView extends SurfaceView implements SurfaceHolder.Callback, S
 	
 	//Useful colors
 	public static final Paint textColor = new Paint();
+	private Paint debugColor = new Paint();
 	
     public ParserView(Context context, int wWidth, int wHeight) 
     {
@@ -77,6 +79,9 @@ public class ParserView extends SurfaceView implements SurfaceHolder.Callback, S
         //Color
         textColor.setColor(Color.WHITE);
         textColor.setTextSize(18);
+        
+        debugColor.setColor(Color.CYAN);
+        debugColor.setTextSize(18);
         
         setLongClickable(true);
     }
@@ -122,8 +127,11 @@ public class ParserView extends SurfaceView implements SurfaceHolder.Callback, S
     	gameState.gameRender(elapsed, canvas);
     	
     	//Draw the fps
-    	canvas.drawText("FPS: " + fps, 10, 20, textColor);
-    	canvas.drawText("DeltaTime: " + elapsed, 10, 40, textColor);
+    	canvas.drawText("FPS: " + fps, 10, 20, debugColor);
+    	canvas.drawText("DeltaTime: " + elapsed, 10, 40, debugColor);
+    	canvas.drawText("ColTime: " + gameState.debugAv, 10, 60, debugColor);
+    	if(gameModel != null)
+    		canvas.drawText("NumbCells: " + gameModel.cellCount, 10, 80, debugColor);
     }
     
     public void slowUpdate( long secondDelta ,int frCount )

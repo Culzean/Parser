@@ -23,7 +23,6 @@ public class PlayerUI
 	private float[] yVals = new float[MEASURE];
 	private float[] zVals = new float[MEASURE];
 	
-	private LinkedList<PlayerTraj> inputList = new LinkedList<PlayerTraj>();
 	final int MAX_INPUTS = 3;
 	private int inputIndex = 0;
 	private int outputIndex = 0;

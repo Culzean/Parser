@@ -47,6 +47,8 @@ public class Platelet extends Cell implements GameObject
 		}
 		else if(e1.getType() == Entity.FATCELL)
 			this.setRemove(true);
+		else if(e1.getType() == Entity.ORGAN)
+			this.setRemove(true);
 	}
 	
 	protected void OutOfBounds()

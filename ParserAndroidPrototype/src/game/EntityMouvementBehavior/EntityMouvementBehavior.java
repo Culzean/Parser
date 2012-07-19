@@ -10,10 +10,12 @@ public abstract class EntityMouvementBehavior
 	protected Vector2D startDir;
 	
 	//Defining all movement types here
+		public static final int CELLSTOP = 0;
 		public static final int FATCELLMOVEMENT = 1;
 		public static final int FATCELLROLL = 2;
 		public static final int HARMONIC = 3;
 		public static final int WANDERING = 4;
+		public static final int OXYFLOAT = 5;
 	
 	public int getMove()					{	return move;	};
 	public void setMove(int newVal)			{	move = newVal;	};

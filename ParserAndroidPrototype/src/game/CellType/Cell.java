@@ -32,11 +32,11 @@ public class Cell extends Entity implements GameObject
 	private double ACCELERATION;
 	protected GameModel model;
 	
-	public Cell(int startX, int startY, double startDX, double startDY, int rad, Resources viewRes, GameModel refModel)
+	public Cell(int startX, int startY, float startDX, float startDY, int rad, Resources viewRes, GameModel refModel)
 	{
 		super(startX, startY, rad, Entity.CELL, viewRes); // add constant for the type!!!!!
 		model = refModel;
-		this.setStartDX(startDX); this.setStartDY(startDY);
+		this.setStartDX((float) startDX); this.setStartDY((float) startDY);
 		this.setVelX(this.getStartDX()); this.setVelY(this.getStartDY());
 		ACCELERATION = 0.0000002;
 		//By default cells are red

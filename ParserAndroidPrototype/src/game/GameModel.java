@@ -16,12 +16,15 @@ import java.util.*;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import events.CreateCell;
 import events.PlayerTraj;
 import events.RandomNumGen;
 import events.Vector2D;
 import game.CellType.Cell;
 import game.CellType.CellPop;
+import game.CellType.Organ;
+import game.CellType.Oxy;
 import game.CellType.Platelet;
 import game.CellType.RedCell;
 import game.CellType.FatCell;
@@ -34,16 +37,17 @@ public class GameModel {
 	
 	public static final int UNIT_LIMIT = 50;
 	
-	static final int ORGAN_RADIUS_MIN = 15;
-	static final int ORGAN_RADIUS_MAX = 24;
-	static final int FAT_RADIUS_DEF = 18;
-	static final double DATA_STEP_MIN = 0.04;
-	static final double DATA_STEP_MAX = 0.2;
+	public static final int ORGAN_RADIUS_MIN = 15;
+	public static final int ORGAN_RADIUS_MAX = 24;
+	public static final int FAT_RADIUS_DEF = 18;
+	public static final double DATA_STEP_MIN = 0.04;
+	public static final double DATA_STEP_MAX = 0.2;
+	public static final int NUMB_ORGANS = 3;
 	
 	private float beatSinus[];
 	private double dataStep, curData;
 	public ArrayList<GameObject> cells = null;
-	public ArrayList<Organ> organs = null;
+	//public ArrayList<Organ> organs = null;
 	public ArrayList<OrganGhost> ghosts = null;
 	public LinkedList<CreateCell> buildList = new LinkedList<CreateCell>();
 	public final int MAX_BUILD_LIST = 12;
@@ -85,9 +89,7 @@ public class GameModel {
 		curData = 0;
 		ghostCount = 0;
 		cells = new ArrayList<GameObject>();
-		organs = new ArrayList<Organ>();
 		ghosts = new ArrayList<OrganGhost>();
-		//fatties = new ArrayList<FatCell>();
 		scoreCal = new GameScore(this);
 		
 		for(int i=0; i<MAX_BUILD_LIST; ++i)
@@ -171,6 +173,13 @@ public class GameModel {
 		return ( (Cell) cells.get(cellCount-1) );
 	}
 	
+	public Cell addOrgan(int startX, int startY, int rad, int colors[], String iname)
+	{
+		cells.add(cellCount, new Organ(startX, startY, rad, viewRes, this, colors,iname));
+		++cellCount;
+		return ( (Cell) cells.get(cellCount-1) );
+	}
+	
 	public void infect()			{		++virusCount;	};
 	public void disinfect()			{		--virusCount;	};
 	
@@ -243,18 +252,18 @@ public class GameModel {
 			return true;
 	}
 	
-	public Organ addOrgan(int x, int y, int rad,int idur)
+	public Oxy addOxygen(int x, int y, int rad,int idur)
 	{
-		organs.add(getOrganCount(), new Organ(x, y,  rad, idur, viewRes, this));
-		
-		return (Organ) organs.get(organCount++);
+		cells.add(cellCount, new Oxy(x, y,  rad, idur, viewRes, this));
+		++cellCount;
+		return (Oxy) cells.get(cellCount -1);
 	}
-	public boolean removeOrgan(Iterator< Organ > itr)
+	public boolean removeOrgan(Iterator< GameObject > itr)
 	{
 		itr.remove();
-		--organCount;
-		if(organs.size() != getOrganCount())
-			System.out.println("organs does not contain the correct number of elements");
+		--cellCount;
+		/*if(cells.size() != getCellCount())
+			System.out.println("organs does not contain the correct number of elements");*/
 		
 		return true;
 	}
@@ -435,7 +444,6 @@ public class GameModel {
 	public void clearCells()
 	{
 		cells.removeAll(cells);
-		organs.removeAll(organs);
 		ghosts.removeAll(ghosts);
 		buildList.removeAll(buildList);
 		organCount = 0;

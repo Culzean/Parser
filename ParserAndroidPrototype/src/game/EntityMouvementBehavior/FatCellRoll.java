@@ -40,8 +40,8 @@ public class FatCellRoll extends EntityMouvementBehavior{
 		vRoll.x = ( vRoll.x * Math.cos(rot) ) - ( vRoll.y * Math.sin(rot) );
 		vRoll.y = ( vRoll.x * Math.sin(rot) ) + ( vRoll.y * Math.cos(rot) );
 		
-		e1.setPosX( vRollPos.x + vRoll.x );
-		e1.setPosY( vRollPos.y + vRoll.y );
+		e1.setPosX( (float) (vRollPos.x + vRoll.x) );
+		e1.setPosY( (float) (vRollPos.y + vRoll.y) );
 	}
 
 }

@@ -25,6 +25,9 @@ public class MenuState extends State
 	private MenuHUD hud = null;
 	private int startCellType;
 	
+	private String cellHelp[] = {"These cells help you defend the body!","Worker cells, these guys carry nutrients about!",
+			"Use these for healing, repairs and to buy time!"};
+	
 	public MenuState(int width, int height, ParserView viewRef, GameModel model) 
 	{
 		super(width, height, viewRef, model);
@@ -38,18 +41,22 @@ public class MenuState extends State
 	@Override
 	public void gameRender(long elapsed, Canvas dbImage) 
 	{
+		calib1.draw(dbImage);
+		calib2.draw(dbImage);
 		dbImage.drawText("Instructions: ", 20, 60, ParserView.textColor);
 		dbImage.drawText(" - The heart is a vital organ. And it's your job to keep this heart ticking over.", 20, 80, ParserView.textColor);
 		dbImage.drawText(" - Use touch and drag controls to tell the heart where to send blood cells", 20, 100, ParserView.textColor);
 		dbImage.drawText(" - Each blood cell has a different role", 20, 120, ParserView.textColor);
-		dbImage.drawText(" - Watch out for viruses getting in your way and fat beginning to accumulate.", 20, 140, ParserView.textColor);
-		dbImage.drawText("   Too much fat about and you'll suffer a heart attack!", 20, 160, ParserView.textColor);
+		dbImage.drawText(" - Grab nutrients as they appear and send them to nearby organs to keep them active", 20, 140, ParserView.textColor);
+		dbImage.drawText(" - Active organs burn fat!", 20, 160, ParserView.textColor);
+		dbImage.drawText("   Too much fat about and you'll suffer a heart attack!", 20, 180, ParserView.textColor);
+		dbImage.drawText(" - Watch out for viruses getting in your way and fat beginning to accumulate.", 20, 200, ParserView.textColor);
 		if(startCellType == -1)
-			dbImage.drawText("Select starting blood cell type", 280, 380, ParserView.textColor);
-		else
-			dbImage.drawText("Touch screen to begin game!", 280, 300, ParserView.textColor);
-		calib1.draw(dbImage);
-		calib2.draw(dbImage);
+				dbImage.drawText("Select starting blood cell type", 280, 380, ParserView.textColor);
+		else{
+			dbImage.drawText(cellHelp[startCellType], 200, 320, ParserView.textColor);
+			dbImage.drawText("Touch screen to begin game!", 280, 280, ParserView.textColor);
+		}
 		hud.draw(dbImage);
 	}
 

@@ -18,6 +18,7 @@ import game.Entity;
 import game.GameModel;
 import game.EntityMouvementBehavior.FatCellMovement;
 import game.EntityMouvementBehavior.FatCellRoll;
+import game.EntityMouvementBehavior.CellStop;
 import gameEngine.GameObject;
 import gameEngine.ParserView;
 import game.EntityMouvementBehavior.*;
@@ -45,6 +46,8 @@ public class FatCell extends Cell implements GameObject
 	}
 	public void Collide(Entity e1)
 	{
+		//no detecting if the a whole row or whole col is full of fat. Creating endless collision (bad!)
+		//This means pushing on the opposite axis!
 		if(e1.getType() == Entity.FATCELL)
 		{
 			if(collides == null)
@@ -77,8 +80,14 @@ public class FatCell extends Cell implements GameObject
 		{
 			this.setRadius((int) (getRadius() - ( e1.getRadius() * 0.8) ));
 		}
-		else
-			super.Collide(e1);
+		else if(e1.getType() == Entity.CELLPOP)
+		{
+			if(!remove)
+			{
+				model.orderCell().order(CELLPOP, getRadius(), (int)posX, (int)posY);
+				this.remove = true;
+			}			
+		}
 	}
 	
 	public boolean Update(double beat, double dt)
@@ -93,7 +102,7 @@ public class FatCell extends Cell implements GameObject
 			onWall = false;
 		}
 		else if(this.getRadius() < MIN_RAD)
-			this.setRadius(MIN_RAD);
+			return true;
 		
 		if(!onWall)
 		{
@@ -157,7 +166,8 @@ public class FatCell extends Cell implements GameObject
 	{
 		collides = null;
 		onWall = true;
-		this.setMouvementBehavior(new FatCellStop());
+		if(getMouvementBehavior().getMove() != EntityMouvementBehavior.CELLSTOP)
+			this.setMouvementBehavior(new CellStop(EntityMouvementBehavior.CELLSTOP));
 	}
 	
 	public boolean getWall() { return onWall; };

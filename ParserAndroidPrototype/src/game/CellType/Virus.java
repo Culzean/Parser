@@ -48,5 +48,10 @@ public class Virus extends Cell implements GameObject
 			this.setPosY((0 - radius));
 	}
 	
+	public void Collide(Entity e1)
+	{
+		
+	}
+	
 	
 }

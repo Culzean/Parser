@@ -11,16 +11,64 @@
 
 package gameEngine;
 
-import events.Vector2D;
+
+import java.util.Iterator;
 import game.Entity;
+import game.GameModel;
 import game.Heart;
 
 public class CollisionControl 
 {
+	GameModel model = null;
+	Heart heartRef = null;
+	
+	public CollisionControl( GameModel modelRef )
+	{
+		model = modelRef;
+		heartRef = model.heartRef;
+	}
+	
+	public boolean BruteForce(  )
+	{
+		for(int i = 0, end = model.cells.size(); i < end; ++i)
+		{
+			for(int j = i; j < end; ++j)
+			{
+				//If there is a collision between 2 cells
+				if(CircleVsCircle((Entity)model.cells.get(i), (Entity)model.cells.get(j)))
+				{
+					//If only 1 cell in the array, the 2 cells will be the same so we need to check if it's not the same!
+					if(model.cells.get(i) != model.cells.get(j))
+					{
+						model.cells.get(i).Collide((Entity) model.cells.get(j));
+						model.cells.get(j).Collide((Entity) model.cells.get(i));
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
+	public boolean CheckHeart()
+	{
+		Iterator<GameObject> itr = model.cells.iterator();
+		
+		while(itr.hasNext())
+		{
+			Entity crtCell = (Entity) itr.next();
+			if(crtCell.getType() == Entity.FATCELL)
+			{
+				if( CollisionControl.InvCircleVsCircle(heartRef,crtCell) )
+					return false;
+			}
+		}
+		return true;
+	}
+	
 	public static boolean CircleVsCircle(Entity c1, Entity c2)
 	{
 		//could also do SAT AABB
-		
+
 		//(x-h1)2 + (y-k1)2 = r2 and (x-h2)2 + (y-k2)2 = r2 
 		// if sqrt(h2-h1)2 + (k2-k1)2 <= (r1 + r2)
 		//then colliding

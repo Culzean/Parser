@@ -21,7 +21,9 @@ public abstract class State
 	protected int windowWidth, windowHeight;
 	protected int mouseX, mouseY;
 	protected ParserView gameView;
-	protected GameModel gameModel; 
+	protected GameModel gameModel;
+	//temp
+	public Long debugAv; 
 	
 	public State(int _windowWidth, int _windowHeight, ParserView gView, GameModel modelRef)
 	{

@@ -4,6 +4,7 @@ import android.R;
 import android.app.Activity;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Debug;
 import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.widget.TextView;
@@ -16,6 +17,8 @@ public class ParserActivity extends Activity
     public void onCreate(Bundle savedInstanceState) 
     {
     	super.onCreate(savedInstanceState);
+    	//profiling method!
+    	//Debug.startMethodTracing("parser", 20000000);
     	DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -27,6 +30,8 @@ public class ParserActivity extends Activity
     {
     	super.onDestroy();
     	gameView.stopGame();
+    	//profiling stop
+    	//Debug.stopMethodTracing();
     }
     
     public void onStart()

@@ -66,7 +66,6 @@ public class WhiteCell extends Cell implements GameObject
 	
 	public void Collide(Entity e1)
 	{
-		super.Collide(e1);
 		
 		if(e1.getType() == Entity.VIRUS)
 		{
@@ -82,5 +81,11 @@ public class WhiteCell extends Cell implements GameObject
 			this.colVec.x = 0;
 			this.colVec.y = 0;
 		}
+		else if(e1.getType() == Entity.ORGAN)
+		{
+			
+		}
+		else
+			super.Collide(e1);
 	}
 }
