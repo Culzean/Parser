@@ -18,6 +18,17 @@ public class FatCellMovement extends EntityMouvementBehavior{
 		vMovement.y *= VEL_CONST;
 		this.setMove(EntityMouvementBehavior.FATCELLMOVEMENT);
 	}
+	
+	public FatCellMovement(int heartX, int heartY, int spawnX, int spawnY, int obX, int obY)
+	{
+		int x = (heartX - spawnX);
+		int y = (heartY - spawnY);
+		vMovement = new Vector2D(x,y);
+		vMovement.normalize();
+		vMovement.x *= VEL_CONST;
+		vMovement.y *= VEL_CONST;
+		this.setMove(EntityMouvementBehavior.FATTHROW);
+	}
 
 	public void update(Entity e1, double heartBeat, double dt) {
 		

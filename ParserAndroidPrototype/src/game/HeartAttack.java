@@ -76,6 +76,7 @@ public class HeartAttack extends State{
 			if( !(((Entity) updateCell).isRemoved()) )
 			updateCell.Update( gameModel.getBeat(),dt);
 		}
+		gameModel.resetBuildCount();//only build units directly
 		return true;
 	}
 

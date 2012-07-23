@@ -31,7 +31,8 @@ public class CreateCell {
 	
 	public boolean addCell( Vector2D inputVec )
 	{
-		//find cell type and call correct method in model to add cell
+		//find cell type and call correct method in model to add cell	
+		
 		if( cellType == Entity.REDCELL ||
 				cellType == Entity.WHITECELL ||
 				cellType == Entity.PLATELET ||
@@ -53,6 +54,10 @@ public class CreateCell {
 		else if(cellType == Entity.CELLPOP)
 		{
 			model.addPop(posX, posY, rad, 0);
+		}
+		else if(cellType == Entity.OXYFLARE)
+		{
+			model.addFlare(posX, posY, rad, 0);
 		}
 		setActive(false);
 		return true;

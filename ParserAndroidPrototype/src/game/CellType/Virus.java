@@ -26,6 +26,10 @@ import gameEngine.Sprite;
 
 public class Virus extends Cell implements GameObject
 {	
+	
+	private float kickCount; 
+	private final float KICK_TIMER = 440f;//tenth of a second
+	
 	public Virus (int startX, int startY, Vector2D istart2d, Resources viewRes, GameModel refModel)
 	{
 		super(startX, startY, istart2d, 16, viewRes, refModel);
@@ -34,6 +38,7 @@ public class Virus extends Cell implements GameObject
 		this.setMouvementBehavior(new Harmonic( istart2d, 0 ));
 		Bitmap bitmapSprite = BitmapFactory.decodeResource(viewRes, R.drawable.virus);
 		sprite = new Sprite(bitmapSprite, 1, 1, 1, 1);
+		kickCount = (float) (KICK_TIMER * 0.7);
 	}
 	
 	protected void OutOfBounds()
@@ -48,9 +53,40 @@ public class Virus extends Cell implements GameObject
 			this.setPosY((0 - radius));
 	}
 	
+	public boolean Update(double beat, double dt)
+	{
+		kickCount += (dt * 0.09) ;
+		
+		if(kickCount > KICK_TIMER)
+			kickCount = KICK_TIMER +1;
+		
+		super.Update(beat, dt);
+		
+		return remove;
+	}
+	
 	public void Collide(Entity e1)
 	{
-		
+		if(e1.getType() == Entity.FATCELL)
+		{
+			if(Kick())
+			{
+				FatCell temp = (FatCell) e1;
+				if(temp.getWall())
+				{
+					kickCount = 0;
+					temp.FatKick((int)posX, (int)posY, this);
+					temp.setWall(false);
+				}
+			}
+		}
+	}
+	
+	public boolean Kick(){
+		if( kickCount >= KICK_TIMER)
+			return true;
+		else
+			return false;
 	}
 	
 	

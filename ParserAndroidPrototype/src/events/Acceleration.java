@@ -24,7 +24,7 @@ package events;
 		VERYSLOW (-4,-4),
 		ROLL (0.02,0.02);
 		
-		public static float slow = 0.1f;
+		public static float slow = 0.17f;
 		public static float med = 0.7f;
 		public static float fast = 1.1f;
 		public static float drift = 0.04f;

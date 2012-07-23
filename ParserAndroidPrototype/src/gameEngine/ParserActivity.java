@@ -29,7 +29,7 @@ public class ParserActivity extends Activity
     public void onDestroy()
     {
     	super.onDestroy();
-    	gameView.stopGame();
+    	
     	//profiling stop
     	//Debug.stopMethodTracing();
     }
@@ -39,12 +39,13 @@ public class ParserActivity extends Activity
     	super.onStart();
     }
     
-    /*public void onStop()
+    public void onStop()
     {
-    	
+    	super.onStop();
+    	gameView.stopGame();
     }
     
-    public void onPause()
+   /* public void onPause()
     {
     	
     }

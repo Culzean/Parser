@@ -38,9 +38,8 @@ public class CellPop extends Cell implements GameObject{
 			{
 				remove = true;
 				setRadius(endRad);
-				return true;
 			}
-		return false;
+		return remove;
 	}
 	
 }

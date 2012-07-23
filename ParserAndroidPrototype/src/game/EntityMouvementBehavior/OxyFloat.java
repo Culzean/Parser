@@ -11,7 +11,7 @@ public class OxyFloat extends EntityMouvementBehavior{
 	public OxyFloat( int moveType)
 	{
 		this.setMove(moveType);
-		max_velY = - Acceleration.drift;
+		max_velY = - Acceleration.slow;
 		accY = max_velY;
 	}
 	
@@ -23,8 +23,8 @@ public class OxyFloat extends EntityMouvementBehavior{
 		
 		e1.setVelX( (float) (0.9 * Math.sin(Math.toRadians( getAngle())) + 0.5) );
 		
-		if( accY <  0)
-			accY = max_velY;
+		if( accY < max_velY)
+			accY = 0;
 		
 		e1.setPosX((int)(e1.getPosX() + e1.getVelX()));
 

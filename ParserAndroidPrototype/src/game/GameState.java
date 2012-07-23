@@ -161,6 +161,7 @@ public class GameState extends State
 		//seperate check for the heart
 		if( !colRef.CheckHeart() )
 			{
+				gameModel.clearCells();
 				gameView.gameOver();
 				return false;
 			}

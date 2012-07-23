@@ -19,6 +19,7 @@ import game.EntityMouvementBehavior.EntityMouvementBehavior;
 import game.EntityMouvementBehavior.OxyFloat;
 import game.EntityMouvementBehavior.Wandering;
 import gameEngine.GameObject;
+import gameEngine.ParserView;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -30,6 +31,7 @@ public class Oxy extends Entity implements GameObject
 	private float dur, start,flash, flash_max;
 	private boolean draw;
 	private Paint faint;
+	private int trapCol;
 	private GameModel model;
 	
 	public Oxy(float x, float y, int rad, int idur, Resources viewRes, GameModel modelRef)
@@ -44,6 +46,7 @@ public class Oxy extends Entity implements GameObject
 		faint = new Paint(Color.BLUE);
 		faint.setAlpha(110);
 		model = modelRef;
+		trapCol = Color.rgb(183, 180, 255);
 		//Organ are blue for now
 		getEntityColor().setColor(Color.BLUE);
 		this.setType(Entity.OXYGEN);
@@ -56,6 +59,20 @@ public class Oxy extends Entity implements GameObject
 
 		getMouvementBehavior().update(this, beat, dt);
 		
+		//test on edges
+		if( this.getPosX() > (ParserView.windowWidth + radius) ||
+			this.getPosX() < (0 - radius) ||
+			this.getPosY() > (ParserView.windowHeight + radius) ||
+			this.getPosY() < (0 - radius) )
+		{
+			OutOfBounds();
+		}
+				
+		if(lapVec.x > 0 || lapVec.y > 0)
+		{
+			this.ResolveCol();
+			lapVec.x = 0; lapVec.y = 0;
+		}
 		//do we want to remove this yet?
 		this.setDur( (float)(dur - (dt * 0.01) ));
 		if(draw)
@@ -120,12 +137,27 @@ public class Oxy extends Entity implements GameObject
 		else if(c1.getType() == Entity.ORGAN)
 		{
 			if(this.getMouvementBehavior().getMove() == EntityMouvementBehavior.WANDERING )
-				remove = true;
+			{
+				//this.setRadius((int) (this.getRadius() * 0.05));
+				//if(this.getRadius() < 2)
+					{
+						model.orderCell().order(OXYFLARE, getRadius(), (int)posX, (int)posY);
+						remove = true;
+					}
+			}
 		}
 		else if(c1.getType() == Entity.PLATELET)
 		{
 			this.setMouvementBehavior(new CellStop( EntityMouvementBehavior.CELLSTOP ));
 			start = (float) (dur - dur * 0.2);
+		}
+		else if(c1.getType() == Entity.FATCELL)
+		{
+			if(this.getMouvementBehavior().getMove() == EntityMouvementBehavior.WANDERING )
+			{
+				model.orderCell().order(OXYFLARE, getRadius(), (int)posX, (int)posY);
+				remove = true;
+			}
 		}
 	}
 	
@@ -135,6 +167,7 @@ public class Oxy extends Entity implements GameObject
 				|| this.getMouvementBehavior().getMove() == EntityMouvementBehavior.CELLSTOP)
 		{
 			//swap for new type
+			this.setEntityColor(trapCol);
 			this.setMouvementBehavior(new Wandering());
 			this.setStartDX(newVx);		this.setStartDY(newVy);
 		}
@@ -149,9 +182,8 @@ public class Oxy extends Entity implements GameObject
 		
 	}
 
-	@Override
 	protected void OutOfBounds() {
-		model.orderCell().order(FATCELL, model.FAT_RADIUS_DEF, (int)posX, (int)posY);
+		model.orderCell().order(FATCELL, GameModel.FAT_RADIUS_DEF, (int)posX, (int)posY);
 		model.PlaySlop();
 		remove = true;
 		

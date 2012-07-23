@@ -19,6 +19,7 @@ public class GameScore extends Observable{
 	public static final int FAT_GROW = 8;
 	public static final int FAT_SHRINK = 9;
 	public static final int PLATELET_BOUNDS = 10;
+	public static final int FAT_BUST_RICH = 11;
 	
 	private final int NO_POS_EVENTS = 11	;
 	
@@ -119,6 +120,15 @@ public class GameScore extends Observable{
 		{
 			scoreVel *= 0.7;
 		}
+		if(count[GameScore.FAT_BUST] > 0)
+		{
+			if(count[GameScore.FAT_BUST] > 6)
+				scoreVel += (count[GameScore.VIRUS_HIT] * 1.4);
+			else
+				scoreVel += (count[GameScore.VIRUS_HIT] * 0.4);
+		}
+		if(count[GameScore.FAT_BUST_RICH] > 0)
+			scoreVel += (count[GameScore.VIRUS_HIT] * 0.7);
 		tempVirusCount = model.getVirusCount();
 
 		resetCount();

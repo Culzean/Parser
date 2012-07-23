@@ -182,6 +182,7 @@ public class ParserView extends SurfaceView implements SurfaceHolder.Callback, S
 	
 	public void stopGame()
 	{
+		parserThread.setRunning(false);
 		if(null != gameModel)
 			gameModel.ShutDown();
 	}

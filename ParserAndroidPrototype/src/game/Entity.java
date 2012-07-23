@@ -36,6 +36,7 @@ public abstract class Entity
 	public static final int FATCELL = 6;
 	public static final int CELLPOP = 7;
 	public static final int OXYGEN = 8;
+	public static final int OXYFLARE = 9;
 	
 	public static final int NUM_ENT_TYPES = 8;
 	
@@ -153,7 +154,8 @@ public abstract class Entity
 	public boolean isRemoved() { return remove; }
 	public void setRemove(boolean remove) { this.remove = remove; }
 	public int getType() { return type; }					public void setType(int type) { this.type = type; }
-	public Paint getEntityColor() {	return entityColor;	} 	public void setEntityColor(Paint entityColor) { this.entityColor = entityColor; }
+	public Paint getEntityColor() {	return entityColor;	} 			public void setEntityColor(Paint entityColor) { this.entityColor = entityColor; }
+	public int getIntColor() {	return entityColor.getColor();	} 	public void setEntityColor(int entityColor) { this.entityColor.setColor(entityColor); }
 	
 	public int getWidth() {	return this.getRadius(); }		public void setWidth(int width)	{ this.setRadius(width); }
 	public int getHeight() { return this.getRadius(); }		public void setHeight(int height) {	this.setRadius(height);	}

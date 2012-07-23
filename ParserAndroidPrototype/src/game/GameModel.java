@@ -25,6 +25,7 @@ import game.CellType.Cell;
 import game.CellType.CellPop;
 import game.CellType.Organ;
 import game.CellType.Oxy;
+import game.CellType.OxyFlare;
 import game.CellType.Platelet;
 import game.CellType.RedCell;
 import game.CellType.FatCell;
@@ -230,6 +231,12 @@ public class GameModel {
 		++cellCount;
 		return (Cell) cells.get(cellCount-1);
 	}
+	public Cell addFlare(int x, int y,int rad,int idur)
+	{
+		cells.add(cellCount, new OxyFlare(x, y,0,0, rad, viewRes, this));
+		++cellCount;
+		return (Cell) cells.get(cellCount-1);
+	}
 	public boolean removeFat(Iterator< Cell > itr)
 	{
 		itr.remove();
@@ -428,6 +435,7 @@ public class GameModel {
 	public void ShutDown()
 	{
 		soundManager.ReleaseSounds();
+		buildList.removeAll(buildList);
 	}
 	
 	public boolean gameOver()
@@ -443,9 +451,10 @@ public class GameModel {
 	
 	public void clearCells()
 	{
+		for(int i =0; i< buildList.size(); ++i)
+			buildList.get(i).setActive(false);
 		cells.removeAll(cells);
 		ghosts.removeAll(ghosts);
-		buildList.removeAll(buildList);
 		organCount = 0;
 		ghostCount = 0;
 		cellCount = 0;

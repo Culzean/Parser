@@ -112,6 +112,7 @@ public class Organ extends Cell implements GameObject{
 		int popRad = (int) ( (this.getRadius() * 0.4) + ( getRadius() * 0.8 * oxyCount ));
 		model.orderCell().order(CELLPOP, popRad, (int)posX, (int)posY);
 		entityColor.setColor(Color.rgb(DEF_COL[0],DEF_COL[1],DEF_COL[2]) ); 
+		oxyCount = 0;
 	}
 	
 

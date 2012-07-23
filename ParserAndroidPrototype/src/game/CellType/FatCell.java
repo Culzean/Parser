@@ -12,7 +12,9 @@
 package game.CellType;
 
 import android.content.res.Resources;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import events.Vector2D;
 import game.Entity;
 import game.GameModel;
@@ -26,7 +28,10 @@ public class FatCell extends Cell implements GameObject
 {
 	private boolean onWall = false;
 	Vector2D vfatPair = null;
-	FatCell collides = null;
+	Cell collides = null;
+	private int sickColor;
+	private Paint richColor;;
+	private boolean oxyCell;
 	FatCellMovement normalMove = null;
 	private final int DEF_RAD;
 	private final int MAX_RAD;
@@ -43,6 +48,9 @@ public class FatCell extends Cell implements GameObject
 		this.setMouvementBehavior( normalMove );
 		getEntityColor().setColor(Color.YELLOW);
 		this.setType(Entity.FATCELL);
+		sickColor = Color.rgb(65, 111, 28);
+		richColor = new Paint(Color.rgb(38, 26, 190));
+		setOxyCell(false);
 	}
 	public void Collide(Entity e1)
 	{
@@ -55,6 +63,8 @@ public class FatCell extends Cell implements GameObject
 				FatCell temp = (FatCell)e1;
 				if(this.getMouvementBehavior().getMove() == EntityMouvementBehavior.FATCELLROLL)
 						this.HitWall();
+				else if(e1.getMouvementBehavior().getMove() == EntityMouvementBehavior.FATTHROW)
+				{}
 				else if(this.onWall == temp.onWall)
 				{
 					super.Collide(e1);
@@ -87,6 +97,17 @@ public class FatCell extends Cell implements GameObject
 				model.orderCell().order(CELLPOP, getRadius(), (int)posX, (int)posY);
 				this.remove = true;
 			}			
+		}
+		else if(e1.getType() == Entity.VIRUS)
+		{
+			if(onWall)
+			{
+				
+			}
+		}
+		else if(e1.getType() == Entity.OXYGEN)
+		{
+			oxyCell = true;
 		}
 	}
 	
@@ -144,7 +165,26 @@ public class FatCell extends Cell implements GameObject
 				lapVec.x = 0; lapVec.y = 0;
 			}
 		}
-		return false;
+		return remove;
+	}
+	
+	public void FatKick(int objX, int objY, Cell kick)
+	{
+		if(getMouvementBehavior().getMove() == EntityMouvementBehavior.CELLSTOP)
+			{
+			//send fatcell in direction of player
+				int randX = model.rand.Random(model.heartRef.getRadius() * 2) - model.heartRef.getRadius();
+				int randY = model.rand.Random(model.heartRef.getRadius() * 2) - model.heartRef.getRadius();
+				this.setEntityColor(sickColor);
+				this.setMouvementBehavior(new FatCellMovement(randX, randY,(int)posX, (int)posY,objX, objY) );
+			}
+	}
+	
+	public void Draw(Canvas canvas)
+	{
+		if(oxyCell)
+			canvas.drawCircle((int)this.getPosX(), (int)this.getPosY(), getRadius()+3, richColor);
+		canvas.drawCircle((int)this.getPosX(), (int)this.getPosY(), getRadius(), entityColor);
 	}
 	
 	protected void OutOfBounds()
@@ -170,5 +210,11 @@ public class FatCell extends Cell implements GameObject
 			this.setMouvementBehavior(new CellStop(EntityMouvementBehavior.CELLSTOP));
 	}
 	
-	public boolean getWall() { return onWall; };
+	public boolean getWall() { return onWall; }			public void setWall(boolean val) { onWall = val; }
+	public boolean isOxyCell() {
+		return oxyCell;
+	}
+	public void setOxyCell(boolean oxyCell) {
+		this.oxyCell = oxyCell;
+	};
 }
