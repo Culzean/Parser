@@ -21,7 +21,7 @@ public class GameScore extends Observable{
 	public static final int PLATELET_BOUNDS = 10;
 	public static final int FAT_BUST_RICH = 11;
 	
-	private final int NO_POS_EVENTS = 11	;
+	private final int NO_POS_EVENTS = 12	;
 	
 	private final int MAX_EVENTS = 14;
 	private int curIndex = 0;

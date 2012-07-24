@@ -25,8 +25,8 @@ public class CellPop extends Cell implements GameObject{
 	{
 		if(e1.getType() == Entity.FATCELL)
 			{
-				e1.setRemove(true);
-				model.scoreCal.regEvent(GameScore.FAT_BUST);
+				FatCell temp = (FatCell) e1;
+				temp.onScore();
 			}
 	}
 	

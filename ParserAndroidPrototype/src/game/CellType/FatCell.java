@@ -18,6 +18,7 @@ import android.graphics.Paint;
 import events.Vector2D;
 import game.Entity;
 import game.GameModel;
+import game.GameScore;
 import game.EntityMouvementBehavior.FatCellMovement;
 import game.EntityMouvementBehavior.FatCellRoll;
 import game.EntityMouvementBehavior.CellStop;
@@ -178,6 +179,15 @@ public class FatCell extends Cell implements GameObject
 				this.setEntityColor(sickColor);
 				this.setMouvementBehavior(new FatCellMovement(randX, randY,(int)posX, (int)posY,objX, objY) );
 			}
+	}
+	
+	public void onScore()
+	{
+		if(oxyCell)
+			model.scoreCal.regEvent(GameScore.FAT_BUST_RICH);
+		else
+			model.scoreCal.regEvent(GameScore.FAT_BUST);
+		remove = true;
 	}
 	
 	public void Draw(Canvas canvas)
