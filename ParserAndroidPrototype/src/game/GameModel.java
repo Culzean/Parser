@@ -25,7 +25,6 @@ import game.CellType.Cell;
 import game.CellType.CellPop;
 import game.CellType.Organ;
 import game.CellType.Oxy;
-import game.CellType.OxyFlare;
 import game.CellType.Platelet;
 import game.CellType.RedCell;
 import game.CellType.FatCell;
@@ -233,7 +232,7 @@ public class GameModel {
 	}
 	public Cell addFlare(int x, int y,int rad,int idur)
 	{
-		cells.add(cellCount, new OxyFlare(x, y,0,0, rad, viewRes, this));
+		cells.add(cellCount, new CellPop(x, y,0,0, rad, viewRes, this));
 		++cellCount;
 		return (Cell) cells.get(cellCount-1);
 	}
